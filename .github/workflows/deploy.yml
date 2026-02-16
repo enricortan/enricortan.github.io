@@ -1,0 +1,62 @@
+name: Fresh Start Sync
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Checkout New Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_SYNC_TOKEN }}
+
+      - name: 2. Pull Figma Source
+        uses: actions/checkout@v4
+        with:
+          repository: enricortan/Portfoliowebsitedesignfinal
+          token: ${{ secrets.MY_SYNC_TOKEN }}
+          path: temp_source
+
+      - name: 3. Move Files
+        run: |
+          cp -rf temp_source/. .
+          rm -rf temp_source
+
+      - name: 4. Build Website
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          npm install
+          npm run build
+          # Push everything from 'dist' to the main folder
+          cp -rf dist/. .
+          rm -rf dist
+
+      - name: 5. Hard Reset & Force Push
+        run: |
+          # 1. Setup local identity
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          # 2. Re-initialize git
+          rm -rf .git
+          git init
+          git checkout -b main
+          
+          # 3. Prepare files
+          echo "enricortan.com" > CNAME
+          echo "node_modules/" > .gitignore
+          
+          # --- SPA FIX: This prevents the 404 on /admin/login ---
+          cp index.html 404.html 
+          # ----------------------------------------------------
+          
+          git add -A
+          git commit -m "Production Sync with Admin Login Fix"
+          
+          # 4. Force push using your Master Token
+          git remote add origin https://${{ secrets.MY_SYNC_TOKEN }}@github.com/enricortan/enricortan.github.io.git
+          git push -u origin main --force
