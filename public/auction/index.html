@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveBid — Procurement Auction UI</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f0f1f7;
+  --surface:   #ffffff;
+  --card:      #f7f8fc;
+  --border:    #dde0ef;
+  --text:      #14142a;
+  --text2:     #3a3a5c;
+  --muted:     #8080aa;
+  --accent:    #009e65;
+  --accent2:   #d9234a;
+  --accent3:   #4f40cc;
+  --warn:      #b86e00;
+  --shadow:    rgba(60,60,140,0.10);
+  --notch-bg:  #e2e4f0;
+  --input-bg:  rgba(0,0,0,0.04);
+  --chip-bg:   rgba(0,0,0,0.05);
+  --gradient:
+    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(79,64,204,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(0,158,101,0.05) 0%, transparent 60%);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  background-image: var(--gradient);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 80px;
+}
+
+/* ── HEADER ── */
+.top-bar { display:flex; align-items:center; justify-content:center; width:100%; max-width:1560px; margin-bottom:36px; }
+.logo-mark { font-size:15px; font-weight:800; letter-spacing:0.06em; color:var(--accent3); }
+.logo-mark span { color:var(--accent); }
+
+.page-header { text-align:center; margin-bottom:32px; }
+.page-header h1 { font-size:clamp(24px,4vw,42px); font-weight:800; letter-spacing:-0.02em; color:var(--text); line-height:1.15; }
+.page-header p { font-size:15px; color:var(--muted); margin-top:8px; line-height:1.5; }
+
+/* ── CONTROLS ── */
+.controls { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:36px; }
+.seg-control { display:flex; background:var(--chip-bg); border:1px solid var(--border); border-radius:13px; padding:3px; gap:3px; }
+.seg-control button { padding:8px 24px; border-radius:10px; border:none; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.18s; background:transparent; color:var(--muted); }
+.seg-control button.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px var(--shadow); }
+.flow-bar { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+.flow-bar button { padding:6px 16px; border:1.5px solid var(--border); border-radius:20px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); color:var(--muted); transition:all 0.18s; }
+.flow-bar button.active { border-color:var(--accent3); color:var(--accent3); background:rgba(79,64,204,0.06); font-weight:600; }
+
+/* ── SECTION LABEL ── */
+.section-head { width:100%; max-width:1560px; margin-bottom:16px; padding:0 4px; }
+.section-head h2 { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:10px; }
+.section-head h2::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── PHONE GRID ── */
+.phone-row { display:flex; gap:18px; flex-wrap:wrap; justify-content:center; width:100%; max-width:1560px; }
+.phone { width:288px; flex-shrink:0; display:flex; flex-direction:column; opacity:0; transform:translateY(16px); animation:rise 0.42s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+.phone:nth-child(1){animation-delay:.04s} .phone:nth-child(2){animation-delay:.10s}
+.phone:nth-child(3){animation-delay:.16s} .phone:nth-child(4){animation-delay:.22s} .phone:nth-child(5){animation-delay:.28s}
+@keyframes rise { to { opacity:1; transform:translateY(0); } }
+
+.phone-step { font-size:10px; font-weight:700; color:var(--muted); text-align:center; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+
+.phone-shell { background:var(--surface); border-radius:38px; overflow:hidden; border:1px solid rgba(0,0,0,0.07); box-shadow:0 0 0 5px rgba(0,0,0,0.03), 0 16px 48px var(--shadow), 0 2px 8px rgba(0,0,0,0.05); }
+.dynamic-island { width:84px; height:26px; background:#1a1a1a; border-radius:18px; margin:10px auto 0; display:block; }
+.status-bar { display:flex; justify-content:space-between; align-items:center; padding:6px 18px 2px; font-size:11px; font-weight:600; color:var(--text); }
+
+.screen { padding:4px 14px 22px; display:flex; flex-direction:column; gap:8px; min-height:560px; background:var(--bg); }
+
+/* ── NAV ── */
+.nav-bar { padding:4px 0 6px; }
+.nav-back { font-size:13px; color:var(--accent3); margin-bottom:2px; }
+.screen-title { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:var(--text); line-height:1.15; }
+.screen-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* ── CHIPS ── */
+.live-chip { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--accent2); background:rgba(217,35,74,0.08); border:1px solid rgba(217,35,74,0.18); border-radius:20px; padding:3px 9px; align-self:flex-start; }
+.live-chip::before { content:''; width:6px; height:6px; background:var(--accent2); border-radius:50%; animation:blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.timer-chip { display:inline-flex; align-items:center; gap:5px; background:rgba(184,110,0,0.09); border:1px solid rgba(184,110,0,0.22); border-radius:20px; padding:3px 9px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--warn); align-self:flex-start; }
+.step-chip { display:inline-flex; align-items:center; background:rgba(79,64,204,0.08); border:1px solid rgba(79,64,204,0.2); border-radius:20px; padding:3px 9px; font-size:11px; font-weight:700; color:var(--accent3); align-self:flex-start; }
+
+/* ── CARD ── */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 13px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.card-label { font-size:9px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+
+/* ── STATS ── */
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.stat-tile { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 11px; }
+.stat-label { font-size:10px; color:var(--muted); margin-bottom:3px; }
+.stat-value { font-size:17px; font-weight:700; letter-spacing:-0.01em; color:var(--text); font-family:'IBM Plex Mono',monospace; }
+.stat-value.green  { color:var(--accent); } .stat-value.red { color:var(--accent2); }
+.stat-value.purple { color:var(--accent3); } .stat-value.warn { color:var(--warn); }
+
+/* ── TABLE ROWS ── */
+.table-group { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.table-section-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); padding:0 2px 5px; }
+.row { display:flex; align-items:center; justify-content:space-between; padding:10px 13px; min-height:42px; border-bottom:0.5px solid var(--border); background:var(--surface); gap:8px; }
+.row:last-child { border-bottom:none; }
+.row-label { font-size:13px; color:var(--text); flex:1; }
+.row-value { font-size:13px; color:var(--muted); text-align:right; }
+.row-value.green  { color:var(--accent); font-family:'IBM Plex Mono',monospace; }
+.row-value.red    { color:var(--accent2); font-family:'IBM Plex Mono',monospace; }
+.row-value.purple { color:var(--accent3); }
+.row-value.mono   { font-family:'IBM Plex Mono',monospace; }
+
+/* ── RANK BADGE ── */
+.rank-badge { width:24px; height:24px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0; }
+.rank-1 { background:rgba(184,110,0,0.12); color:var(--warn); }
+.rank-2 { background:rgba(120,120,128,0.12); color:#636366; }
+.rank-3 { background:rgba(217,35,74,0.10); color:var(--accent2); }
+
+/* ── HERO NUMBER ── */
+.hero-num { font-size:48px; font-weight:800; letter-spacing:-0.03em; line-height:1; }
+.hero-num.red { color:var(--accent2); }
+
+/* ── GAP CARD ── */
+.gap-card { background:rgba(217,35,74,0.05); border:1px solid rgba(217,35,74,0.15); border-radius:13px; padding:11px 13px; display:flex; justify-content:space-between; align-items:center; }
+.gap-label { font-size:12px; color:var(--muted); }
+.gap-value { font-size:18px; font-weight:700; color:var(--accent2); font-family:'IBM Plex Mono',monospace; }
+
+/* ── BUTTONS ── */
+.btn { border:none; border-radius:12px; padding:12px; font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; width:100%; text-align:center; transition:opacity 0.15s; letter-spacing:-0.01em; }
+.btn:active { opacity:0.8; }
+.btn-purple { background:var(--accent3); color:#fff; box-shadow:0 2px 12px rgba(79,64,204,0.25); }
+.btn-green  { background:var(--accent); color:#fff; box-shadow:0 2px 12px rgba(0,158,101,0.22); }
+.btn-red    { background:var(--accent2); color:#fff; }
+.btn-ghost  { background:transparent; border:1.5px solid var(--border); color:var(--accent3); font-size:13px; }
+.btn-ghost.dashed { border-style:dashed; color:var(--muted); }
+
+/* ── ACTION LIST ── */
+.action-list { display:flex; flex-direction:column; gap:6px; }
+.action-row { border:1px solid var(--border); border-radius:12px; padding:10px 13px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text); cursor:pointer; background:var(--surface); transition:background 0.15s; }
+.action-row:hover { background:var(--card); }
+
+/* ── STEP PROGRESS ── */
+.step-progress { display:flex; align-items:center; margin:2px 0 4px; }
+.sp-dot { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700; flex-shrink:0; z-index:1; }
+.sp-dot.done   { background:var(--accent3); color:#fff; }
+.sp-dot.active { background:var(--accent3); color:#fff; box-shadow:0 0 0 3px rgba(79,64,204,0.15); }
+.sp-dot.todo   { background:var(--border); color:var(--muted); }
+.sp-line { flex:1; height:2px; }
+.sp-line.done { background:var(--accent3); }
+.sp-line.todo { background:var(--border); }
+
+/* ── TOGGLE ── */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid var(--border); }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-text { font-size:13px; color:var(--text); }
+.toggle { width:42px; height:24px; border-radius:12px; position:relative; cursor:pointer; flex-shrink:0; transition:background 0.2s; }
+.toggle.on  { background:var(--accent); } .toggle.off { background:var(--border); }
+.toggle::after { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:10px; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:transform 0.2s cubic-bezier(0.34,1.4,0.64,1); }
+.toggle.on::after { transform:translateX(18px); }
+
+/* ── INPUTS ── */
+.ios-field { background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:11px 13px; font-family:'Inter',sans-serif; font-size:14px; color:var(--text); width:100%; outline:none; transition:border-color 0.18s; }
+.ios-field:focus { border-color:var(--accent3); }
+.ios-field::placeholder { color:var(--muted); }
+.field-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; padding:0 1px; }
+.big-input { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:13px; font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; color:var(--accent3); width:100%; text-align:center; outline:none; transition:border-color 0.18s; }
+.big-input:focus { border-color:var(--accent3); }
+.big-input::placeholder { color:var(--muted); font-weight:400; }
+
+/* ── TAG ── */
+.tag { display:inline-flex; align-items:center; gap:5px; background:rgba(79,64,204,0.08); border:1px solid rgba(79,64,204,0.18); border-radius:20px; padding:4px 10px; font-size:12px; color:var(--accent3); font-weight:500; margin:2px; }
+.tag .x { color:var(--muted); font-size:10px; cursor:pointer; }
+
+/* ── COMP ROWS ── */
+.comp-row { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:9px; font-size:13px; margin-bottom:2px; }
+.comp-row.winner { background:rgba(0,158,101,0.08); border:1px solid rgba(0,158,101,0.18); }
+.comp-name { color:var(--muted); } .comp-name.w { color:var(--text); font-weight:700; }
+.comp-price { font-family:'IBM Plex Mono',monospace; color:var(--muted); } .comp-price.w { color:var(--accent); }
+.comp-cat { font-size:9px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin:7px 0 4px; }
+
+/* ── REBID ── */
+.rebid-hero { text-align:center; background:rgba(217,35,74,0.06); border:1px solid rgba(217,35,74,0.15); border-radius:13px; padding:12px; }
+.rebid-hero .rh-num { font-size:26px; font-weight:800; color:var(--accent2); font-family:'IBM Plex Mono',monospace; }
+.rebid-hero .rh-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+.rebid-option { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer; transition:all 0.18s; }
+.rebid-option:hover { border-color:var(--accent); }
+.rebid-option.highlighted { background:rgba(0,158,101,0.05); border-color:rgba(0,158,101,0.3); }
+.ro-label { font-size:11px; color:var(--muted); margin-bottom:3px; }
+.ro-price { font-family:'IBM Plex Mono',monospace; font-size:15px; color:var(--accent); font-weight:500; }
+
+/* ── ALERTS ── */
+.alert-row { display:flex; align-items:flex-start; gap:9px; padding:9px 0; border-bottom:0.5px solid var(--border); }
+.alert-row:last-child { border-bottom:none; }
+.alert-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.icon-red  { background:rgba(217,35,74,0.10); } .icon-warn { background:rgba(184,110,0,0.10); }
+.icon-blue { background:rgba(79,64,204,0.10); } .icon-green { background:rgba(0,158,101,0.10); }
+.alert-title { font-size:12px; font-weight:600; color:var(--text); }
+.alert-sub   { font-size:11px; color:var(--muted); margin-top:1px; }
+.alert-time  { font-size:10px; color:var(--muted); margin-top:1px; font-family:'IBM Plex Mono',monospace; opacity:0.7; }
+
+/* ── BID ITEMS ── */
+.bid-item { border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+.bid-item-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.bid-item-name { font-size:13px; font-weight:700; }
+.edit-btn { border:1px solid var(--accent3); background:transparent; color:var(--accent3); border-radius:6px; padding:2px 9px; font-size:10px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; }
+.bid-prices { display:flex; gap:14px; }
+.bp-label { font-size:10px; color:var(--muted); margin-bottom:2px; }
+.bp-val { font-family:'IBM Plex Mono',monospace; font-size:13px; }
+.bp-val.mine { color:var(--accent2); } .bp-val.best { color:var(--accent); }
+
+/* ── TIMER ── */
+.timer-display { text-align:center; font-family:'IBM Plex Mono',monospace; font-size:38px; font-weight:400; color:var(--warn); padding:6px 0; letter-spacing:0.04em; }
+
+/* ── LI TABLE ── */
+.li-table { width:100%; border-collapse:collapse; }
+.li-table th { font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:3px 6px; border-bottom:1px solid var(--border); }
+.li-table td { padding:6px 6px; font-size:12px; border-bottom:0.5px solid var(--border); }
+.li-table tr:last-child td { border-bottom:none; }
+.li-input { background:var(--input-bg); border:1px solid var(--border); border-radius:6px; padding:3px 7px; font-size:11px; color:var(--text); width:100%; outline:none; font-family:'IBM Plex Mono',monospace; }
+
+/* ── MISC ── */
+.ai-badge { display:inline-flex; align-items:center; gap:3px; background:rgba(79,64,204,0.09); border:1px solid rgba(79,64,204,0.2); border-radius:20px; padding:1px 7px; font-size:9px; font-weight:700; color:var(--accent3); }
+.review-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:0.5px solid var(--border); font-size:12px; }
+.review-row:last-child { border-bottom:none; }
+.review-label { color:var(--muted); }
+.review-value { font-weight:700; font-family:'IBM Plex Mono',monospace; font-size:12px; }
+.star-row { font-size:10px; color:var(--muted); display:flex; gap:8px; flex-wrap:wrap; }
+.star-row span span { color:var(--warn); }
+.search-bar { background:rgba(0,0,0,0.05); border:none; border-radius:10px; padding:9px 12px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); width:100%; outline:none; }
+
+.hidden { display:none !important; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo-mark">Live<span>Bid</span></div>
+</div>
+
+<div class="page-header">
+  <h1>Procurement Auction<br>Mobile UI</h1>
+  <p>End-to-end flow · Buyer creates &amp; manages · Supplier bids in real-time</p>
+</div>
+
+<div class="controls">
+  <div class="seg-control">
+    <button class="active" onclick="showRole('buyer')">🎯  Buyer</button>
+    <button onclick="showRole('supplier')">📦  Supplier</button>
+  </div>
+  <div class="flow-bar" id="buyer-flows">
+    <button class="active" onclick="showFlow('create')">✏️  Create Auction</button>
+    <button onclick="showFlow('live')">⚡  Live Auction</button>
+  </div>
+  <div class="flow-bar hidden" id="supplier-flows">
+    <button class="active" onclick="showFlow('supplier')">📋  Bidding Flow</button>
+  </div>
+</div>
+
+<!-- ══ BUYER CREATE ══ -->
+<div id="flow-create" style="width:100%;max-width:1560px">
+  <div class="section-head"><h2>Buyer Flow — Create Auction (5 steps)</h2></div>
+  <div class="phone-row">
+
+    <div class="phone">
+      <div class="phone-step">Step 1 of 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="screen-title">New Auction</div><div class="screen-sub">Auction basics</div></div>
+          <div class="step-chip">Step 1 of 5</div>
+          <div class="step-progress">
+            <div class="sp-dot active">1</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">2</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">3</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">4</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">5</div>
+          </div>
+          <div><div class="field-label">Auction Title</div><input class="ios-field" value="ABC IT Hardware Auction Q2"></div>
+          <div><div class="field-label">Category</div><input class="ios-field" value="IT Hardware & Equipment"></div>
+          <div><div class="field-label">Total Budget</div><input class="ios-field" value="$1,150,000" style="font-family:'IBM Plex Mono',monospace"></div>
+          <div class="card">
+            <div class="card-label">Auction Type</div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-purple" style="flex:1;padding:9px;font-size:12px">Reverse Bid</button>
+              <button class="btn btn-ghost" style="flex:1;padding:9px;font-size:12px">Sealed Bid</button>
+            </div>
+          </div>
+          <button class="btn btn-purple">Next: Add Items →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Step 2 of 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Back</div><div class="screen-title">Line Items</div><div class="screen-sub">What you're procuring</div></div>
+          <div class="step-chip">Step 2 of 5</div>
+          <div class="step-progress">
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot active">2</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">3</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">4</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">5</div>
+          </div>
+          <div class="card">
+            <table class="li-table">
+              <thead><tr><th>Item</th><th>Qty</th><th>Budget/unit</th></tr></thead>
+              <tbody>
+                <tr><td>Laptops</td><td><input class="li-input" value="100" style="width:44px"></td><td><input class="li-input" value="$950" style="width:58px"></td></tr>
+                <tr><td>Laptop Bags</td><td><input class="li-input" value="100" style="width:44px"></td><td><input class="li-input" value="$25" style="width:58px"></td></tr>
+                <tr><td>Desktops</td><td><input class="li-input" value="2000" style="width:44px"></td><td><input class="li-input" value="$560" style="width:58px"></td></tr>
+                <tr><td>Warranty</td><td><input class="li-input" value="—" style="width:44px"></td><td><input class="li-input" value="$50" style="width:58px"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--muted)">Total Budget</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--accent3)">$1,150,000</span>
+          </div>
+          <button class="btn btn-ghost dashed">＋ Add Item</button>
+          <button class="btn btn-purple">Next: Set Rules →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Step 3 of 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Back</div><div class="screen-title">Auction Rules</div><div class="screen-sub">Bidding parameters</div></div>
+          <div class="step-chip">Step 3 of 5</div>
+          <div class="step-progress">
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot active">3</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">4</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">5</div>
+          </div>
+          <div class="table-group">
+            <div class="row"><span class="row-label">Start Date</span><span class="row-value purple">Mar 10, 10:00 AM</span></div>
+            <div class="row"><span class="row-label">Duration</span><span class="row-value purple">2 Hours</span></div>
+            <div class="row"><span class="row-label">Min. Decrement</span><span class="row-value purple">0.5%</span></div>
+          </div>
+          <div class="card">
+            <div class="card-label">Bidding Rules</div>
+            <div class="toggle-row"><span class="toggle-text">Anti-sniping (+5 min)</span><div class="toggle on"></div></div>
+            <div class="toggle-row"><span class="toggle-text">Show rank to suppliers</span><div class="toggle on"></div></div>
+            <div class="toggle-row"><span class="toggle-text">Hide competitor names</span><div class="toggle off"></div></div>
+            <div class="toggle-row"><span class="toggle-text">Allow partial bids</span><div class="toggle on"></div></div>
+          </div>
+          <button class="btn btn-purple">Next: Invite Suppliers →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Step 4 of 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Back</div><div class="screen-title">Invite Suppliers</div><div class="screen-sub">Who can bid</div></div>
+          <div class="step-chip">Step 4 of 5</div>
+          <div class="step-progress">
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot active">4</div><div class="sp-line todo"></div>
+            <div class="sp-dot todo">5</div>
+          </div>
+          <input class="search-bar" placeholder="🔍  Search supplier name or email…">
+          <div class="card">
+            <div class="card-label">Selected (3)</div>
+            <div>
+              <span class="tag">Supplier X <span class="x">✕</span></span>
+              <span class="tag">Supplier Y <span class="x">✕</span></span>
+              <span class="tag">Supplier Z <span class="x">✕</span></span>
+            </div>
+          </div>
+          <div class="table-section-label">Suggested by AI <span class="ai-badge">✦ AI</span></div>
+          <div class="table-group">
+            <div class="row"><span class="row-label">TechPro Supplies</span><button class="edit-btn" style="color:var(--accent);border-color:var(--accent)">＋ Add</button></div>
+            <div class="row"><span class="row-label">GlobalIT Vendors</span><button class="edit-btn" style="color:var(--accent);border-color:var(--accent)">＋ Add</button></div>
+            <div class="row"><span class="row-label">DataEquip Co.</span><button class="edit-btn" style="color:var(--accent);border-color:var(--accent)">＋ Add</button></div>
+          </div>
+          <button class="btn btn-purple">Next: Review & Launch →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Step 5 of 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Back</div><div class="screen-title">Review & Launch</div><div class="screen-sub">Everything looks good?</div></div>
+          <div class="step-chip">Step 5 of 5</div>
+          <div class="step-progress">
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot done">✓</div><div class="sp-line done"></div>
+            <div class="sp-dot active">5</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Auction Summary</div>
+            <div class="review-row"><span class="review-label">Title</span><span class="review-value" style="font-family:'Inter';font-size:11px">ABC IT Hardware Q2</span></div>
+            <div class="review-row"><span class="review-label">Budget</span><span class="review-value">$1,150,000</span></div>
+            <div class="review-row"><span class="review-label">Starts</span><span class="review-value" style="font-family:'Inter'">Mar 10, 10AM</span></div>
+            <div class="review-row"><span class="review-label">Duration</span><span class="review-value" style="font-family:'Inter'">2 hours</span></div>
+            <div class="review-row"><span class="review-label">Items</span><span class="review-value" style="font-family:'Inter'">4 line items</span></div>
+            <div class="review-row"><span class="review-label">Suppliers</span><span class="review-value" style="font-family:'Inter'">3 invited</span></div>
+            <div class="review-row"><span class="review-label">Anti-sniping</span><span class="review-value" style="color:var(--accent);font-family:'Inter'">On</span></div>
+          </div>
+          <div class="card">
+            <div class="card-label">On Launch</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">✉️ Invites sent to 3 suppliers<br>📋 Bidding instructions attached<br>🔔 You'll be notified of each bid</div>
+          </div>
+          <button class="btn btn-green">🚀 Launch Auction</button>
+          <button class="btn btn-ghost">Save as Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ BUYER LIVE ══ -->
+<div id="flow-live" class="hidden" style="width:100%;max-width:1560px">
+  <div class="section-head"><h2>Buyer Flow — Live Auction (5 screens)</h2></div>
+  <div class="phone-row">
+
+    <div class="phone">
+      <div class="phone-step">Screen 1</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="screen-title">ABC IT Hardware</div><div class="screen-sub">Auction Dashboard</div></div>
+          <div style="display:flex;gap:7px;align-items:center"><div class="live-chip">LIVE</div><div class="timer-chip">⏱ 01:02:14</div></div>
+          <div class="stat-grid">
+            <div class="stat-tile"><div class="stat-label">Best Bid</div><div class="stat-value green">$1,021,600</div></div>
+            <div class="stat-tile"><div class="stat-label">Savings</div><div class="stat-value purple">$128,400</div></div>
+            <div class="stat-tile"><div class="stat-label">Suppliers</div><div class="stat-value">3</div></div>
+            <div class="stat-tile"><div class="stat-label">Total Bids</div><div class="stat-value">21</div></div>
+          </div>
+          <div class="table-section-label">Leading Supplier</div>
+          <div class="table-group">
+            <div class="row"><div class="rank-badge rank-1">1</div><span class="row-label" style="margin-left:7px">Supplier Z</span><span class="row-value green">$1,021,600</span></div>
+          </div>
+          <div class="table-section-label">Item Leaders</div>
+          <div class="table-group">
+            <div class="row"><span class="row-label">Laptops (100)</span><div style="text-align:right"><div class="row-value mono">$800</div><div style="font-size:10px;color:var(--muted)">Supplier Y</div></div></div>
+            <div class="row"><span class="row-label">Bags (100)</span><div style="text-align:right"><div class="row-value mono">$20</div><div style="font-size:10px;color:var(--muted)">Supplier X</div></div></div>
+            <div class="row"><span class="row-label">Desktops (2000)</span><div style="text-align:right"><div class="row-value mono">$520</div><div style="font-size:10px;color:var(--muted)">Supplier Z</div></div></div>
+            <div class="row"><span class="row-label">Warranty</span><div style="text-align:right"><div class="row-value mono">$45</div><div style="font-size:10px;color:var(--muted)">Supplier Z</div></div></div>
+          </div>
+          <div class="action-list">
+            <div class="action-row"><span>Extend Auction</span><span>⏳</span></div>
+            <div class="action-row"><span>Message Suppliers</span><span>💬</span></div>
+            <div class="action-row"><span style="color:var(--accent2)">Close Auction</span><span>🔒</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 2</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Leaderboard</div></div>
+          <div class="timer-chip">⏱ 59:12 remaining</div>
+          <div class="table-group">
+            <div class="row"><div class="rank-badge rank-1">1</div><span class="row-label" style="margin-left:7px">Supplier Z</span><span class="row-value green">$1,021,600</span></div>
+            <div class="row"><div class="rank-badge rank-2">2</div><span class="row-label" style="margin-left:7px">Supplier Y</span><span class="row-value mono">$1,032,200</span></div>
+            <div class="row"><div class="rank-badge rank-3">3</div><span class="row-label" style="margin-left:7px">Supplier X</span><span class="row-value mono">$1,049,900</span></div>
+          </div>
+          <div class="table-section-label">Gap to Leader</div>
+          <div class="table-group">
+            <div class="row"><span class="row-label">Supplier Y</span><span class="row-value red">+$10,600</span></div>
+            <div class="row"><span class="row-label">Supplier X</span><span class="row-value red">+$28,300</span></div>
+          </div>
+          <div class="table-section-label">Reliability Scores</div>
+          <div class="card">
+            <div style="margin-bottom:8px"><div style="font-size:12px;font-weight:700;margin-bottom:3px">Supplier Z</div><div class="star-row"><span>Price <span>★★★★★</span></span><span>Delivery <span>★★★★☆</span></span><span>Quality <span>★★★★★</span></span></div></div>
+            <div><div style="font-size:12px;font-weight:700;margin-bottom:3px">Supplier Y</div><div class="star-row"><span>Price <span>★★★★☆</span></span><span>Delivery <span>★★★★★</span></span><span>Quality <span>★★★☆☆</span></span></div></div>
+          </div>
+          <button class="btn btn-ghost">Message Supplier</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 3</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Item Comparison</div><div class="screen-sub">Per-item best bids</div></div>
+          <div class="card">
+            <div class="comp-cat">Laptops (100 units)</div>
+            <div class="comp-row winner"><span class="comp-name w">Supplier Y ★</span><span class="comp-price w">$800</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier Z</span><span class="comp-price">$810</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier X</span><span class="comp-price">$820</span></div>
+            <div class="comp-cat">Laptop Bags (100 units)</div>
+            <div class="comp-row winner"><span class="comp-name w">Supplier X ★</span><span class="comp-price w">$20</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier Z</span><span class="comp-price">$21</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier Y</span><span class="comp-price">$22</span></div>
+            <div class="comp-cat">Desktops (2000 units)</div>
+            <div class="comp-row winner"><span class="comp-name w">Supplier Z ★</span><span class="comp-price w">$520</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier Y</span><span class="comp-price">$530</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier X</span><span class="comp-price">$540</span></div>
+            <div class="comp-cat">Warranty</div>
+            <div class="comp-row winner"><span class="comp-name w">Supplier Z ★</span><span class="comp-price w">$45</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier Y</span><span class="comp-price">$46</span></div>
+            <div class="comp-row"><span class="comp-name">Supplier X</span><span class="comp-price">$48</span></div>
+          </div>
+          <div class="card">
+            <div class="card-label">AI Price Benchmark <span class="ai-badge">✦ AI</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Market Price</span><span style="font-family:'IBM Plex Mono',monospace">$530</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Current Best</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--accent)">$520</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Savings</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--accent)">1.8%</span></div>
+          </div>
+          <button class="btn btn-purple">Split Award →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 4</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Bid Trends</div><div class="screen-sub">Auction momentum</div></div>
+          <div class="timer-chip">⏱ 47:30 remaining</div>
+          <div class="card">
+            <div class="card-label">Price Over Time</div>
+            <svg width="100%" height="110" viewBox="0 0 252 110" style="margin:6px 0" preserveAspectRatio="none">
+              <line x1="0" y1="28" x2="252" y2="28" stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="56" x2="252" y2="56" stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="84" x2="252" y2="84" stroke="var(--border)" stroke-width="1"/>
+              <polyline points="8,10 62,24 110,44 158,62 202,80 244,98" fill="none" stroke="var(--accent2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="8,26 62,42 110,60 158,74 202,88 244,106" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="8,44 62,60 110,74 158,84 202,96 244,108" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="244" cy="98" r="3.5" fill="var(--accent2)"/>
+              <circle cx="244" cy="106" r="3.5" fill="var(--warn)"/>
+              <circle cx="244" cy="108" r="3.5" fill="var(--accent)"/>
+            </svg>
+            <div style="display:flex;gap:12px;font-size:10px;font-weight:600">
+              <span style="color:var(--accent2)">● Supplier X</span>
+              <span style="color:var(--warn)">● Supplier Y</span>
+              <span style="color:var(--accent)">● Supplier Z</span>
+            </div>
+          </div>
+          <div class="table-section-label">Buyer Insights</div>
+          <div class="table-group">
+            <div class="row"><span style="font-size:15px">🔥</span><span class="row-label" style="margin-left:8px;font-size:12px">Supplier X dropping most aggressively</span></div>
+            <div class="row"><span style="font-size:15px">📉</span><span class="row-label" style="margin-left:8px;font-size:12px">Prices still falling — hold off</span></div>
+            <div class="row"><span style="font-size:15px">⚡</span><span class="row-label" style="margin-left:8px;font-size:12px">Consider extending for more rounds</span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost" style="flex:1">Extend +10m</button>
+            <button class="btn btn-purple" style="flex:1">Close →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Controls</div><div class="screen-sub">Manage the live auction</div></div>
+          <div class="card" style="text-align:center"><div class="card-label" style="text-align:center">Time Remaining</div><div class="timer-display">00:12:15</div></div>
+          <div class="card" style="background:rgba(184,110,0,0.06);border-color:rgba(184,110,0,0.18)">
+            <div style="font-size:12px;color:var(--text2);line-height:1.5"><strong style="color:var(--warn)">Anti-Sniping Active</strong><br>A late bid within 3 min auto-extends by 5 minutes.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <button class="btn btn-ghost">⏳ Extend +10 Minutes</button>
+            <button class="btn btn-ghost">⏸ Pause Auction</button>
+            <button class="btn btn-ghost">📣 Notify Stakeholders</button>
+            <button class="btn btn-green">✓ Close & Award</button>
+            <button class="btn btn-red">⚠ Emergency Stop</button>
+          </div>
+          <div class="card">
+            <div class="card-label">Split Award Preview</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.8">Laptops → <strong style="color:var(--text)">Supplier Y</strong><br>Bags → <strong style="color:var(--text)">Supplier X</strong><br>Desktops → <strong style="color:var(--text)">Supplier Z</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SUPPLIER ══ -->
+<div id="flow-supplier" class="hidden" style="width:100%;max-width:1560px">
+  <div class="section-head"><h2>Supplier Flow — Live Bidding (5 screens)</h2></div>
+  <div class="phone-row">
+
+    <div class="phone">
+      <div class="phone-step">Screen 1</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="screen-title">ABC Hardware</div><div class="screen-sub">Supplier X — Live Auction</div></div>
+          <div style="display:flex;gap:7px"><div class="live-chip">LIVE</div><div class="timer-chip">⏱ 58:40</div></div>
+          <div class="card" style="text-align:center;background:rgba(79,64,204,0.04);border-color:rgba(79,64,204,0.15)">
+            <div class="card-label" style="text-align:center">Your Current Rank</div>
+            <div class="hero-num red">#3</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px">of 3 suppliers</div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-tile"><div class="stat-label">Your Total</div><div class="stat-value red">$1,049,900</div></div>
+            <div class="stat-tile"><div class="stat-label">Best Bid</div><div class="stat-value green">$1,021,600</div></div>
+          </div>
+          <div class="gap-card"><span class="gap-label">Gap to Win</span><span class="gap-value">$28,300</span></div>
+          <div class="table-group">
+            <div class="row"><span style="font-size:15px">⚠️</span><span class="row-label" style="margin-left:8px;font-size:12px">New bid submitted by Supplier Z</span><span class="row-value" style="font-size:10px">just now</span></div>
+          </div>
+          <button class="btn btn-purple">Update My Bids →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 2</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Your Bids</div><div class="screen-sub">Edit individual line items</div></div>
+          <div class="bid-item"><div class="bid-item-head"><span class="bid-item-name">Laptops (100)</span><button class="edit-btn">Edit</button></div><div class="bid-prices"><div><div class="bp-label">Your Bid</div><div class="bp-val mine">$820</div></div><div><div class="bp-label">Best Bid</div><div class="bp-val best">$800</div></div></div></div>
+          <div class="bid-item"><div class="bid-item-head"><span class="bid-item-name">Laptop Bags (100)</span><button class="edit-btn">Edit</button></div><div class="bid-prices"><div><div class="bp-label">Your Bid</div><div class="bp-val best">$20</div></div><div><div class="bp-label">Best Bid</div><div class="bp-val best">$20</div></div></div></div>
+          <div class="bid-item"><div class="bid-item-head"><span class="bid-item-name">Desktops (2000)</span><button class="edit-btn">Edit</button></div><div class="bid-prices"><div><div class="bp-label">Your Bid</div><div class="bp-val mine">$540</div></div><div><div class="bp-label">Best Bid</div><div class="bp-val best">$520</div></div></div></div>
+          <div class="bid-item"><div class="bid-item-head"><span class="bid-item-name">Warranty</span><button class="edit-btn">Edit</button></div><div class="bid-prices"><div><div class="bp-label">Your Bid</div><div class="bp-val mine">$48</div></div><div><div class="bp-label">Best Bid</div><div class="bp-val best">$45</div></div></div></div>
+          <button class="btn btn-purple">Update All Bids →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 3</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ My Bids</div><div class="screen-title">Update Bid</div><div class="screen-sub">Desktops — 2000 units</div></div>
+          <div class="stat-grid">
+            <div class="stat-tile" style="text-align:center"><div class="stat-label">Best Bid</div><div class="stat-value green">$520</div></div>
+            <div class="stat-tile" style="text-align:center"><div class="stat-label">Your Current</div><div class="stat-value red">$540</div></div>
+          </div>
+          <div><div class="field-label">New Bid (per unit)</div><input class="big-input" placeholder="$ 515"></div>
+          <div style="text-align:center;font-size:12px;color:var(--muted)">Estimated Rank: <strong style="color:var(--accent3)">#2</strong> of 3</div>
+          <div class="card">
+            <div class="card-label">Price History</div>
+            <svg width="100%" height="44" viewBox="0 0 252 44">
+              <polyline points="8,40 60,34 110,26 158,18 202,12 244,10" fill="none" stroke="var(--accent2)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="244" cy="10" r="3.5" fill="var(--accent2)"/>
+            </svg>
+            <div style="font-size:10px;color:var(--muted);text-align:center;font-family:'IBM Plex Mono',monospace">Trending down ↓ good time to bid</div>
+          </div>
+          <button class="btn btn-purple">Submit Bid →</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 4</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="nav-back">‹ Dashboard</div><div class="screen-title">Quick Rebid</div><div class="screen-sub">Intelligent suggestions</div></div>
+          <div class="rebid-hero"><div class="rh-num">$28,300</div><div class="rh-sub">behind the leader · currently #3</div></div>
+          <div class="table-section-label">Suggested Bids <span class="ai-badge">✦ AI</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="rebid-option"><div class="ro-label">Match best bid exactly</div><div class="ro-price">$1,021,600</div></div>
+            <div class="rebid-option highlighted"><div class="ro-label">Beat best by 1% — Recommended ⭐</div><div class="ro-price">$1,011,400</div></div>
+            <div class="rebid-option"><div class="ro-label">Beat best by 2%</div><div class="ro-price">$1,001,200</div></div>
+          </div>
+          <div><div class="field-label">Custom Bid</div><input class="big-input" placeholder="$ Enter total bid"></div>
+          <button class="btn btn-purple">Submit Selected →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="phone-step">Screen 5</div>
+      <div class="phone-shell">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+        <div class="screen">
+          <div class="nav-bar"><div class="screen-title">Alerts</div></div>
+          <div style="display:flex;gap:7px"><div class="live-chip">LIVE</div><div class="timer-chip">⏱ 48:15</div></div>
+          <div class="card" style="flex:1">
+            <div class="alert-row"><div class="alert-icon icon-red">📉</div><div><div class="alert-title">New bid on Desktops</div><div class="alert-sub">Supplier Z underbid you</div><div class="alert-time">just now</div></div></div>
+            <div class="alert-row"><div class="alert-icon icon-warn">⚠️</div><div><div class="alert-title">Rank changed</div><div class="alert-sub">#2 → <strong style="color:var(--accent2)">#3</strong></div><div class="alert-time">1 min ago</div></div></div>
+            <div class="alert-row"><div class="alert-icon icon-blue">⏳</div><div><div class="alert-title">Auction Extended</div><div class="alert-sub">+5 min — anti-sniping triggered</div><div class="alert-time">3 min ago</div></div></div>
+            <div class="alert-row"><div class="alert-icon icon-warn">⚠️</div><div><div class="alert-title">New bid on Laptops</div><div class="alert-sub">Supplier Y</div><div class="alert-time">7 min ago</div></div></div>
+            <div class="alert-row"><div class="alert-icon icon-blue">✉️</div><div><div class="alert-title">Message from Buyer</div><div class="alert-sub">"Please review warranty pricing"</div><div class="alert-time">12 min ago</div></div></div>
+          </div>
+          <button class="btn btn-purple">Update My Bids →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentRole = 'buyer';
+  function showRole(role) {
+    currentRole = role;
+    document.querySelectorAll('.seg-control button').forEach((b, i) => {
+      b.classList.toggle('active', (role==='buyer'&&i===0)||(role==='supplier'&&i===1));
+    });
+    document.getElementById('buyer-flows').classList.toggle('hidden', role!=='buyer');
+    document.getElementById('supplier-flows').classList.toggle('hidden', role!=='supplier');
+    showFlow(role==='buyer' ? 'create' : 'supplier');
+  }
+  function showFlow(flow) {
+    ['flow-create','flow-live','flow-supplier'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById('flow-'+flow).classList.remove('hidden');
+    const bar = currentRole==='buyer' ? document.getElementById('buyer-flows') : document.getElementById('supplier-flows');
+    bar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes("'"+flow+"'")));
+    document.querySelectorAll('#flow-'+flow+' .phone').forEach((p,i)=>{
+      p.style.animation='none'; void p.offsetWidth;
+      p.style.cssText+=';animation:rise 0.42s cubic-bezier(0.34,1.2,0.64,1) '+(i*0.06+0.03)+'s forwards;opacity:0;transform:translateY(16px)';
+    });
+  }
+</script>
+</body>
+</html>

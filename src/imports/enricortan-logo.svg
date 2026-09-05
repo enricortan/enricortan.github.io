@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 334.2 324" fill="none" width="120" height="120">
+  <defs>
+    <linearGradient id="outerG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="innerG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <path fill="url(#outerG)"
+    d="M302.7,141.9L162.9,281.8L46.1,165L185.8,25.3L162.5,2L11.1,153.4c-6.4,6.4-6.4,16.8,0,23.1l140.2,140.2c6.4,6.4,16.8,6.4,23.1,0L326,165.2L302.7,141.9z"/>
+  <path fill="url(#innerG)" filter="url(#glow)"
+    d="M244.2,153.3V153l0.1-0.1l-0.1-69.5l-70-0.2l-70,70.2c-6.4,6.4-6.4,16.8,0,23.1l0.1,0.1c6.4,6.4,16.8,6.4,23.1,0l61.1-61.1l23.4,0v23.1L150.7,200c-6.4,6.4-6.4,16.8,0,23.1l0.1,0.1c6.4,6.4,16.8,6.4,23.1,0l69.8-69.8L244.2,153.3z"/>
+</svg>
