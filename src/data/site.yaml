@@ -31,7 +31,7 @@ home:
 
   selectedWork:
     heading: "Selected work"
-    intro: "Banking, property data and a hiring exercise, each with the decisions that shaped it. Some client work is behind a password."
+    intro: "Banking products and a hiring exercise, each with the decisions that shaped it."
     cta: { label: "All work", href: "/work/" }
 
   howIWork:
@@ -52,7 +52,7 @@ home:
 
   lab:
     heading: "Lab"
-    intro: "Tools, agents, films and experiments. Smaller than case studies, and closer to how I actually work."
+    intro: "Tools and experiments. Smaller than case studies, and closer to how I actually work."
     cta: { label: "All lab", href: "/lab/" }
 
   notes:
@@ -75,12 +75,12 @@ home:
 pages:
   work:
     title: "Work"
-    lede: "Case studies from banking, property data and a hiring exercise, each with the decisions that shaped it. Client work that isn't public yet is behind a password."
-    description: "Case studies by Enrico R. Tan: products, a design system and a design exercise, with the decisions behind them."
+    lede: "Case studies from banking and a hiring exercise, each with the decisions that shaped it."
+    description: "Case studies by Enrico R. Tan: banking products and a design exercise, with the decisions behind them."
   lab:
     title: "Lab"
-    lede: "Tools, agents, films and experiments. Smaller than case studies, and closer to how I actually work."
-    description: "Tools, Figma plugins, AI agents, a product film and experiments by Enrico R. Tan."
+    lede: "Tools and experiments. Smaller than case studies, and closer to how I actually work."
+    description: "Tools and experiments by Enrico R. Tan."
   notes:
     title: "Notes"
     lede: "Writing on how the work gets made: design systems, shipping, and running a team of AI agents."

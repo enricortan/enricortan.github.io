@@ -6,8 +6,8 @@ import { getWork, isListed, pageCopy, toIndexItems } from '@/lib/content';
 const work = (await getWork()).filter((e) => isListed(e.data));
 const copy = await pageCopy('work', {
   title: 'Work',
-  lede: 'Selected case studies. Some are password-protected while the work is under wraps.',
-  description: 'Selected case studies: products, design systems and tools designed and built by Enrico R. Tan.',
+  lede: 'Selected case studies, each with the decisions that shaped it.',
+  description: 'Selected case studies designed and built by Enrico R. Tan.',
 });
 ---
 
