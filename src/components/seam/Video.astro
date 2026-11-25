@@ -1,0 +1,49 @@
+---
+/**
+ * Video (Kai): a muted loop. Matches the encode recipes in study/02-brand-motion.md §7:
+ *   <name>.av1.mp4  (AV1 10-bit, first choice)   <name>.h264.mp4  (H.264 fallback)
+ *   poster = the first frame (WebP), or the entry's poster/cover image.
+ * preload="none"; plays at ≥ 50% in view, pauses off screen (src/scripts/video.ts).
+ * Reduced motion: never autoplays; poster + a Play button. A pause control is always there
+ * (WCAG 2.2.2), and the text description is always visible under the video.
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  h264: string;
+  av1?: string;
+  poster: ImageMetadata | string;
+  description: string;
+}
+const { h264, av1, poster, description } = Astro.props;
+
+let posterUrl: string;
+let w = 1600;
+let h = 1000;
+if (typeof poster === 'string') {
+  posterUrl = poster;
+} else {
+  const img = await getImage({ src: poster, format: 'webp', width: Math.min(1600, poster.width), quality: 80 });
+  posterUrl = img.src;
+  w = poster.width;
+  h = poster.height;
+}
+const portrait = h > w;
+let hash = 0;
+for (const c of h264) hash = (hash * 31 + c.charCodeAt(0)) | 0;
+const descId = `vd-${(hash >>> 0).toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+---
+
+<figure class="video" data-seam-video data-orient={portrait ? 'portrait' : 'landscape'} data-bleed="wide">
+  <div class="video-frame">
+    <video muted playsinline loop preload="none" poster={posterUrl} width={w} height={h} aria-describedby={descId} disablepictureinpicture>
+      {av1 && <source src={av1} type='video/mp4; codecs="av01.0.08M.10"' />}
+      <source src={h264} type="video/mp4" />
+    </video>
+    <button class="video-toggle" type="button" data-video-toggle hidden aria-label="Play video">
+      <svg viewBox="0 0 10 12" aria-hidden="true" focusable="false"><path d="M0 0 10 6 0 12Z"></path></svg><span>Play</span>
+    </button>
+  </div>
+  <figcaption class="video-desc" id={descId}>{description}</figcaption>
+</figure>

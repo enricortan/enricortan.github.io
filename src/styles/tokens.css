@@ -1,0 +1,74 @@
+/* =========================================================================
+   Tokens. Dark ("Blueprint") is the default; light is "Vellum".
+   Contrast (study/02-brand-motion.md §2): every text pair is AA, lowest 4.82:1.
+   The theme boot script in SeamHead sets html[data-theme] before first paint:
+   saved choice, else the system preference, else dark. Without JS the
+   media query below follows the system.
+   ========================================================================= */
+:root {
+  --bg: #0A1426;          /* Blueprint: page ground */
+  --plate: #0F1C33;       /* Plate: raised surface */
+  --plate-2: #16263F;     /* Plate raised: hover, inset */
+  --hair: #22385A;        /* Hairline: grid, dividers (decorative, never text) */
+  --rule: #5A7294;        /* Rule: control edges, 3:1 */
+  --ink: #E6EDF5;
+  --ink-2: #AEBDD0;
+  --ink-3: #8A9DB6;
+  --accent: #7EE3C9;      /* Mint = FLNT primary-300: links, focus, outlines */
+  --accent-line: #4FA690; /* isolines, hatching (decorative) */
+  --signal: #FF8E6E;      /* Redline: the seam and live measurements only, < 1% of a screen */
+  --btn-bg: #7EE3C9;
+  --btn-bg-hover: #A5EBD9;
+  --btn-ink: #0A1426;
+  --mark-outer: #E6EDF5;
+  --mark-inner: #7EE3C9;
+  --relief-plate: #1C2E4D;
+  --relief-mint: #7EE3C9;
+  --focus: #7EE3C9;
+
+  --sans: "Archivo", "Archivo Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "ER Mono", "ER Mono Fallback", "ER Mono Fallback 2", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --nav-h: 64px;
+  --margin: clamp(16px, 4vw, 56px);
+  --gap: clamp(16px, 2vw, 24px);
+  --section: clamp(88px, 12vw, 176px);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-ui: cubic-bezier(.22, 1, .36, 1);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #EEF2F1;          /* Vellum */
+  --plate: #F9FBFA;       /* Sheet */
+  --plate-2: #E2E8E7;     /* Sheet inset */
+  --hair: #CBD5D4;
+  --rule: #6E8189;
+  --ink: #0C1830;         /* Navy ink */
+  --ink-2: #33435C;
+  --ink-3: #53637A;
+  --accent: #13705F;      /* Teal ink: never flows back into FLNT work */
+  --accent-line: #3E9C86;
+  --signal: #AD3B25;
+  --btn-bg: #0C1830;
+  --btn-bg-hover: #1D2E4E;
+  --btn-ink: #7EE3C9;
+  --mark-outer: #0C1830;
+  --mark-inner: #13705F;
+  --relief-plate: #FFFFFF;
+  --relief-mint: #4FB79C;
+  --focus: #0C1830;
+  color-scheme: light;
+}
+
+/* No JS: follow the system. (With JS, data-theme is always set.) */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #EEF2F1; --plate: #F9FBFA; --plate-2: #E2E8E7; --hair: #CBD5D4; --rule: #6E8189;
+    --ink: #0C1830; --ink-2: #33435C; --ink-3: #53637A; --accent: #13705F; --accent-line: #3E9C86;
+    --signal: #AD3B25; --btn-bg: #0C1830; --btn-bg-hover: #1D2E4E; --btn-ink: #7EE3C9;
+    --mark-outer: #0C1830; --mark-inner: #13705F; --relief-plate: #FFFFFF; --relief-mint: #4FB79C;
+    --focus: #0C1830;
+    color-scheme: light;
+  }
+}

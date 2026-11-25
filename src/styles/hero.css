@@ -1,0 +1,61 @@
+/* =========================================================================
+   Hero: the Seam (SeamHero.astro, src/scripts/seam-hero.ts).
+   The h1 is the LCP; WebGL boots after fonts and first paint.
+   Until then (and without WebGL2) the flat mark sits where the relief will be.
+   ========================================================================= */
+.hero {
+  --hero-h: calc(100svh - var(--nav-h));
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+  min-height: var(--hero-h);
+  display: grid; align-content: end;
+  padding: 72px var(--margin) clamp(56px, 8vh, 96px);
+  overflow: hidden; isolation: isolate;
+}
+.hero-canvas, .hero-fallback { position: absolute; z-index: -1; }
+.hero-canvas { inset: 0; width: 100%; height: 100%; opacity: 0; max-width: none; }
+.hero.gl-on .hero-canvas { opacity: 1; }
+.hero.gl-on .hero-fallback { display: none; }
+
+/* fallback mark: same placement formula as the WebGL relief (seam-hero.ts layout()) */
+.hero-fallback {
+  --s: min(calc(var(--hero-h) * .76), 47vw);
+  width: var(--s); height: calc(var(--s) * 324 / 334.2); max-width: none;
+  left: calc(100% - var(--s) * .91);
+  top: calc(var(--hero-h) * .41 - var(--s) * .4847);
+}
+@media (max-width: 899px) {
+  .hero-fallback {
+    --s: min(100vw, calc(var(--hero-h) * .5));
+    left: calc(60% - var(--s) / 2);
+    top: calc(max(64px + var(--s) / 2, var(--hero-h) * .32) - var(--s) * .4847);
+  }
+}
+.hero-fallback .o { fill: var(--mark-outer); opacity: .9; }
+.hero-fallback .i { fill: var(--mark-inner); }
+
+.hero-copy { max-width: 1120px; position: relative; }
+.hero h1 { margin-bottom: 28px; }
+.hero-row { display: flex; flex-wrap: wrap; align-items: end; gap: 20px 40px; }
+.hero-row .lede { max-width: 34ch; color: var(--ink); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
+
+/* the seam handle: a 44px slider for keyboard and touch */
+.seam-handle {
+  position: absolute; top: 0; left: 0; z-index: 3;
+  width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  display: none; place-items: center; cursor: ew-resize; touch-action: none;
+  border-radius: 2px;
+}
+.hero.gl-on .seam-handle { display: grid; }
+.seam-handle::before {
+  content: ""; width: 14px; height: 14px; transform: rotate(45deg);
+  background: var(--bg); border: 1.5px solid var(--signal);
+}
+.seam-handle .lbl {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 13px; color: var(--ink-2); white-space: nowrap; pointer-events: none;
+}
+.seam-handle .l { right: 46px; }
+.seam-handle .r { left: 46px; }
+@media (max-width: 599px) { .seam-handle .lbl { display: none; } }

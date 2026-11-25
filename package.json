@@ -1,0 +1,34 @@
+{
+  "name": "enricortan-com",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview --port 4321",
+    "check": "astro check",
+    "guard": "node scripts/guard.mjs",
+    "verify": "node scripts/verify-protected.mjs",
+    "seal": "node scripts/seal.mjs",
+    "unseal": "node scripts/unseal.mjs",
+    "keygen": "node scripts/keygen.mjs",
+    "prepare": "git config core.hooksPath .githooks || true",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "8.1.6",
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/sitemap": "3.7.6",
+    "astro": "7.4.13",
+    "sharp": "0.35.5",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "typescript": "6.0.3"
+  }
+}

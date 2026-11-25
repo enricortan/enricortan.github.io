@@ -1,0 +1,27 @@
+---
+title: "FlightDesk"
+summary: "A local flight assistant: it searches fares, scores each itinerary, alerts on price drops, and has a chat that can change its own settings."
+proof: "Takes a personal annoyance all the way to a working tool, using AI where it helps and plain rules where it doesn't."
+kind: app
+status: wip # TODO(Enrico): wip or live (in use)?
+year: 2026
+cover: ./cover.jpg
+coverAlt: "Plain navy cover. A screen recording is still to come."
+confidentiality: cleared
+protected: false
+stack: ["Node.js (no dependencies)", "Anthropic API", "Claude Code CLI", "Server-sent events"]
+---
+
+{/* TODO(Enrico): a short capture with the trip details and any personal data blurred, then replace the navy cover. */}
+
+FlightDesk does the checking for a family trip: it searches the routes, scores what it finds and tells me when something fits the budget.
+
+**It runs on my laptop.** A Node.js app with no dependencies and no install step. Double-click and it opens in its own browser window.
+
+**It ranks, it doesn't just list.** Every itinerary gets a score from price, schedule and duration (50/30/20), converted to Philippine pesos. Preferred departure and arrival windows can either boost matching flights or hide the rest.
+
+**It knows what's live and what's a guess.** Live fares come from Google Flights, read page by page, including the full-service airlines that only appear after the page's scripts run. Rows from AI web research or reference tables are tagged as estimates. They never trigger a price-drop alert, and they raise at most one "fits your budget" alert per airline and route per day.
+
+**It taps you on the shoulder.** Alerts for a fare under budget, a drop of a set percentage, or a new promo that fits the trip arrive as Windows notifications. Anything raised during quiet hours waits until morning.
+
+**The chat can change the settings, and says so.** "Only show departures between 8 am and 2 pm" changes the filter. The chat uses the Anthropic API, or the local Claude Code CLI when there's no key, and always says what it changed.

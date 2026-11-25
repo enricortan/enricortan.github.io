@@ -1,0 +1,74 @@
+---
+/**
+ * SpecScrub (Kai): one pinned frame per case study. Scrolling moves a 45° seam across it:
+ * the working (the @spec twin, or a procedural redline + grid drawing of the render) gives way
+ * to the shipped render, and the steps beside it light in sync (src/scripts/spec-scrub.ts).
+ * Reduced motion: not pinned, a static 50/50 split, every step shown.
+ * The frame is a measure zone: a redline crosshair reads x/y in the render's own pixels.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+
+interface Props {
+  render: ImageMetadata;
+  spec?: ImageMetadata;
+  alt: string;
+  steps: { label: string; text: string }[];
+}
+const { render, spec, alt, steps } = Astro.props;
+
+const STEPS = [640, 960, 1280, 1920];
+const widthsFor = (img: ImageMetadata) => STEPS.filter((w) => w < img.width).concat(Math.min(img.width, 2560));
+const sizes = '(min-width: 900px) 58vw, 100vw';
+const rows = Math.max(4, Math.round((16 * render.height) / render.width));
+---
+
+<section class="scrub" data-scrub data-bleed="full" aria-label="Spec to shipped">
+  <div class="scrub-stage">
+    <div
+      class="scrub-frame"
+      data-scrub-frame
+      data-measure
+      data-measure-w={render.width}
+      style={`aspect-ratio: ${render.width} / ${render.height}; --rows: ${rows}`}
+    >
+      {
+        spec ? (
+          <div class="layer spec">
+            <Picture src={spec} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={widthsFor(spec)} sizes={sizes} loading="lazy" decoding="async" />
+          </div>
+        ) : (
+          <div class="layer spec spec-proc" aria-hidden="true">
+            <div class="ghost">
+              <Picture src={render} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={widthsFor(render)} sizes={sizes} loading="lazy" decoding="async" />
+            </div>
+            <div class="grid" />
+            <div class="frame" />
+            <i class="dim h"><span>{render.width}</span></i>
+            <i class="dim v"><span>{render.height}</span></i>
+            <span class="tag">spec · drawn from the render</span>
+          </div>
+        )
+      }
+      <div class="layer render" data-scrub-render>
+        <Picture src={render} alt={alt} formats={['avif', 'webp']} fallbackFormat="jpg" widths={widthsFor(render)} sizes={sizes} loading="lazy" decoding="async" />
+      </div>
+      <svg class="seamline" aria-hidden="true" focusable="false"><line x1="0" y1="0" x2="0" y2="0" data-scrub-line></line></svg>
+    </div>
+    <div class="scrub-copy">
+      <ol class="steps" data-scrub-steps>
+        {
+          steps.map((s, i) => (
+            <li data-step={i} class={i === 0 ? 'on' : undefined}>
+              <span class="k">{s.label}</span>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="mono muted">
+        <span class="if-motion">Scroll to move the seam: working on the right, shipped on the left.</span><span class="if-reduced">Working on the right, shipped on the left.</span>
+      </p>
+    </div>
+  </div>
+</section>

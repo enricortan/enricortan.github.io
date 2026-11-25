@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 414 404" width="414" height="404">
+<title>ER mark, construction drawing</title>
+<defs><pattern id="h" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#4FA690" stroke-width="1.2"/></pattern></defs>
+<g fill="none" stroke="#4FA690" stroke-dasharray="4 4"><polygon points="163,0 326,163 163,326 0,163"/><line x1="-30" y1="-30" x2="356" y2="356"/><line x1="356" y1="-30" x2="-30" y2="356"/><circle cx="27.5" cy="165" r="16.5"/></g>
+<path d="M302.7,141.9L162.9,281.8L46.1,165L185.8,25.3L162.5,2L11.1,153.4c-6.4,6.4-6.4,16.8,0,23.1l140.2,140.2c6.4,6.4,16.8,6.4,23.1,0L326,165.2L302.7,141.9z" fill="url(#h)"/>
+<g fill="none" stroke="#7EE3C9" stroke-width="1.25"><path d="M302.7,141.9L162.9,281.8L46.1,165L185.8,25.3L162.5,2L11.1,153.4c-6.4,6.4-6.4,16.8,0,23.1l140.2,140.2c6.4,6.4,16.8,6.4,23.1,0L326,165.2L302.7,141.9z"/><path d="M244.2,83.4V152.87L173.935,223.135A16.5,16.5,0,0,1,150.6,199.8L211.2,139.2V116.4H187.67L127.535,176.535A16.5,16.5,0,0,1,104.2,153.2L174,83.4z"/></g>
+<g stroke="#FF8E6E" stroke-width="1.25" fill="none"><line x1="86.8" y1="77.7" x2="110.1" y2="101"/><line x1="80" y1="84.5" x2="93.6" y2="70.9"/><line x1="103.3" y1="107.8" x2="116.9" y2="94.2"/><line x1="250" y1="77" x2="306" y2="21" stroke-dasharray="5 4"/></g>
+<g font-family="IBM Plex Mono, ui-monospace, monospace" font-size="21" fill="#FF8E6E"><text x="44" y="122">33</text><text x="268" y="20">exit</text><text x="-26" y="210">r 16.5</text></g>
+</svg>

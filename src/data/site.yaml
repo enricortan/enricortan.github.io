@@ -1,0 +1,116 @@
+# Site-wide copy and settings. Owner: Nora (content). Theo maps these into layouts and config.
+# Public copy only: nothing here may depend on FLNT internals.
+
+title: "Enrico R. Tan"
+url: "https://enricortan.com"
+locale: "en"
+
+nav:
+  - label: "Work"
+    href: "/work/"
+  - label: "Lab"
+    href: "/lab/"
+  - label: "Notes"
+    href: "/notes/"
+  - label: "About"
+    href: "/about/"
+
+seo:
+  titleTemplate: "%s · Enrico R. Tan"
+  defaultTitle: "Enrico R. Tan · Designer who ships"
+  description: "Enrico R. Tan designs products, builds them, and directs the AI agents that help him do both. Case studies, lab experiments and notes."
+  # ogImage: Kai's seam hero render (1200×630) once it exists; Theo's /og/default.png until then.
+
+home:
+  hero:
+    eyebrow: "Enrico R. Tan · Product designer"
+    title: "Designer who ships."
+    lede: "I design products, build them, and direct the AI agents that help me do both."
+    primaryCta: { label: "See the work", href: "/work/" }
+    secondaryCta: { label: "Get in touch", href: "#contact" }
+
+  selectedWork:
+    heading: "Selected work"
+    intro: "Banking, property data and a hiring exercise, each with the decisions that shaped it. Some client work is behind a password."
+    cta: { label: "All work", href: "/work/" }
+
+  howIWork:
+    id: "how-i-work"
+    heading: "A one-person product studio"
+    lede: "Research, design, build, QA: I lead the whole loop. The agents are my team; the decisions stay mine."
+    steps:
+      - label: "Design"
+        title: "Decide on evidence"
+        body: "I start with evidence: an audit, a measurement, a test with real people. Decisions go into a dated log, so anyone can see why a screen is the way it is."
+      - label: "Build"
+        title: "Ship it in code"
+        body: "I build what I design, in the real codebase, and check it in the running product, in both themes and at real zoom levels. A design isn't done until it renders."
+      - label: "Agents"
+        title: "Direct a team of AI agents"
+        body: "Agents research, build, screenshot and check, each with a written brief and files of its own. Every run is measured, every mistake becomes a written lesson, and every ruling stays mine."
+    cta: { label: "How I run the agents", href: "/notes/how-i-run-a-design-team-of-ai-agents/" }
+
+  lab:
+    heading: "Lab"
+    intro: "Tools, agents, films and experiments. Smaller than case studies, and closer to how I actually work."
+    cta: { label: "All lab", href: "/lab/" }
+
+  notes:
+    heading: "Latest note"
+    cta: { label: "All notes", href: "/notes/" }
+
+  about:
+    heading: "About"
+    body: "Adaptation is the craft. I've designed digital products since 2015, in banking, cybersecurity, healthcare and startups. Now I design in Figma, ship in code, and run a studio of AI agents."
+    cta: { label: "More about me", href: "/about/" }
+
+  contact:
+    id: "contact"
+    heading: "Say hello"
+    body: "A role, a project, a talk, or a question about something here: email me."
+    emailLabel: "Email me"
+    # The address comes from profile.yaml (email). TODO(Enrico): public email.
+
+# Per-page copy, read by pageCopy() in src/lib/content.ts. These words win over the page defaults.
+pages:
+  work:
+    title: "Work"
+    lede: "Case studies from banking, property data and a hiring exercise, each with the decisions that shaped it. Client work that isn't public yet is behind a password."
+    description: "Case studies by Enrico R. Tan: products, a design system and a design exercise, with the decisions behind them."
+  lab:
+    title: "Lab"
+    lede: "Tools, agents, films and experiments. Smaller than case studies, and closer to how I actually work."
+    description: "Tools, Figma plugins, AI agents, a product film and experiments by Enrico R. Tan."
+  notes:
+    title: "Notes"
+    lede: "Writing on how the work gets made: design systems, shipping, and running a team of AI agents."
+    description: "Notes by Enrico R. Tan on design systems, shipping, and working with AI agents."
+  about:
+    title: "About"
+    lede: "Designer who ships."
+    description: "About Enrico R. Tan: product designer since 2015, in banking, cybersecurity, healthcare and startups. He designs in Figma, ships in code, and runs a studio of AI agents."
+
+footer:
+  note: "Designed and built by Enrico R. Tan, with a little help from his agents."
+  colophonHref: "/lab/this-site/"
+
+notFound:
+  title: "Nothing at this address"
+  body: "This page doesn't exist, or it moved when the site was rebuilt. Old /thoughts links now live under Notes."
+  cta: { label: "Back to the work", href: "/work/" }
+
+protectedPage:
+  heading: "This one's behind a password"
+  body: "Some client work can't be public yet. If you have the password, enter it below. If you'd like to see it, email me."
+
+# Redirects from the audit (§5). astro.config.mjs serves exact paths; 404.astro forwards wildcards.
+redirects:
+  - { from: "/thoughts", to: "/notes/" }
+  - { from: "/thoughts/*", to: "/notes/*" }
+  - { from: "/contact", to: "/#contact" }
+  - { from: "/admin", to: "/" }
+  - { from: "/admin/*", to: "/" }
+  - { from: "/login", to: "/" }
+  - { from: "/dashboard", to: "/" }
+  - { from: "/settings", to: "/" }
+# /eauction and /auction stay up as the static prototype.

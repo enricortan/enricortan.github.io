@@ -1,0 +1,33 @@
+---
+import Case from '@/layouts/Case.astro';
+import { getLab, hasBody, hrefFor, isListed, pad } from '@/lib/content';
+
+// Only lab entries with an MDX body get a page; the rest are cards on /lab/.
+export async function getStaticPaths() {
+  const all = await getLab();
+  const listed = all.filter((e) => isListed(e.data));
+  const withPage = all.filter(hasBody);
+  const listedWithPage = withPage.filter((e) => isListed(e.data));
+  return withPage.map((entry) => {
+    const i = listedWithPage.indexOf(entry);
+    const next = i >= 0 ? (listedWithPage.length > 1 ? listedWithPage[(i + 1) % listedWithPage.length] : undefined) : listedWithPage[0];
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        number: pad((listed.indexOf(entry) >= 0 ? listed.indexOf(entry) : all.indexOf(entry)) + 1),
+        next: next && {
+          href: hrefFor(next),
+          title: next.data.title,
+          number: pad(listed.indexOf(next) + 1),
+          locked: next.data.protected,
+        },
+      },
+    };
+  });
+}
+
+const { entry, number, next } = Astro.props;
+---
+
+<Case entry={entry} number={number} next={next} />

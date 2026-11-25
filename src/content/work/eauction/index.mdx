@@ -1,0 +1,112 @@
+---
+title: "eAuction"
+summary: "A mobile reverse-auction prototype for both sides of the table, made as a hiring design exercise: create an auction, watch it live, bid to win."
+hook: "Both sides of a live auction, on a phone."
+client: "Design exercise (hiring process)"
+role: ["Product designer", "Prototyper"]
+team: "Solo, with AI assistants"
+year: 2026
+period: "2026-03"
+status: exercise
+type: product
+tools: ["Figma", "Figma Make", "React", "An AI chat assistant (wireframes)"]
+cover: ./cover.jpg
+coverAlt: "eAuction prototype: a hand holds a phone on step 1 of 'New Auction', beside three live screens: Monitor & Control with rankings and an Award Bid button, Supplier Ranking with a bid-trend chart, and Item Comparison with the best price per item."
+featured: true
+order: 5
+visibility: public
+confidentiality: cleared
+protected: false
+disclaimer: "A design exercise from a hiring process. Company ABC, the suppliers and every figure are fictional."
+links:
+  - label: "Live prototype"
+    url: "/eauction/"
+updated: 2026-11-25
+---
+
+{/* TODO(Enrico): the prototype still has its old password gate and wears the recruiter's brand purple; v2 removes the gate (Theo). Add 2–3 stills from /eauction/ (buyer monitor, supplier standing, the rules switches) as 4:5 crops. */}
+
+## Context
+
+The scenario was set for me. Company ABC is buying IT hardware: 100 laptops, 100 laptop bags, 2,000 desktops, and a three-year warranty on the desktops. It invites three suppliers, X, Y and Z, to a live **reverse auction**, where prices only go down. A buyer creates and runs the auction; suppliers bid to win the contract.
+
+The design had to be judged on four things: simplicity, usability, whether it scales to 20 or more suppliers, and how well it supports decisions.
+
+## Problem
+
+Both sides watch the same auction, but they need different answers from it, fast.
+
+- **The buyer** needs to know who is winning, by how much, what the savings are against budget, and when to extend, close or award.
+- **A supplier** needs their rank, the gap to the leader, the best competing price per item, and a quick way to bid again.
+
+## My role
+
+Everything, on my own: the flows, the screens and a clickable prototype published on this site.
+
+## Process
+
+**1. Words before pixels.** I drafted low-fidelity wireframes as plain text with an AI assistant, one screen per block. Status on top, decision data in the middle, actions at the bottom.
+
+```
+┌───────────────────────────────┐
+│ Auction Summary               │
+│ Suppliers: 3                  │
+│ Total Bids: 18                │
+│ Best Savings: $128,400        │
+│ Best Total Bid: $1,021,600    │
+└───────────────────────────────┘
+```
+
+**2. From two screens to seven.** The first pass had two screens per journey. A second pass grew each side to five to seven screens and added the mechanics a real auction needs: protection against last-second bids, quick rebids, alerts when your rank changes, and a way to tell stakeholders the savings so far.
+
+**3. A real prototype.** I built both journeys as one clickable prototype in Figma Make, in Philippine pesos, at phone size. The buyer creates an auction in four steps (Details, Items, Suppliers, Review), launches it, monitors it and awards it. The supplier accepts the invitation, sees their standing, submits a new bid and confirms it.
+
+## Key decisions
+
+### 1. One grammar for both sides
+
+**Kept.** Every screen, buyer or supplier, reads top to bottom the same way: where the auction is, what the numbers say, what you can do.
+
+**Why.** Simplicity was the first criterion.
+
+{/* TODO(Enrico): expand the why and add the trade-off, in your words. */}
+
+### 2. Transparency is the buyer's call
+
+**Options.** Fixed rules for every auction (the wireframes assumed rankings and the best bid are always visible), or rules the buyer sets.
+
+**Kept.** Three switches at setup: show suppliers their live rank, show them the best bid amount, and auto-extend on last-minute bids (five more minutes if a bid lands in the final two).
+
+**Trade-off.** One more decision for the buyer before launch. In the demo auction, auto-extend is off.
+
+{/* TODO(Enrico): the why, in your words (e.g. who should decide how much suppliers see, and why). */}
+
+### 3. Rebid without arithmetic
+
+**Kept.** A supplier sees the gap to the leader in money and can answer in one tap: Match best, Beat by 1%, or a custom amount. Before submitting, they see the new total.
+
+**Why.** From the prototype's own design notes: suppliers can act fast without needing to calculate.
+
+### 4. Compare by item, not just by total
+
+**Kept.** Alongside the supplier ranking, the buyer gets an item comparison: the best price for each line across all suppliers.
+
+**Why.** Decision support was one of the four criteria, and my working notes marked item-level comparison as critical for a procurement decision.
+
+{/* TODO(Enrico): the wireframes list "split the award by item" as a future feature. Say whether you'd build it next. */}
+
+### 5. Built for 20 suppliers, demoed with 3
+
+**Kept.** A sortable leaderboard, an activity feed and search, so the screens hold at any number of participants.
+
+**Why.** Scale to 20 or more suppliers was an explicit criterion, even though the scenario has three.
+
+## The build
+
+The prototype is React, generated and edited in Figma Make alongside the Figma design file, and published as a static site. It uses hash routes, so links to the buyer and supplier journeys work on GitHub Pages without a server.
+
+## Outcome
+
+A complete, clickable exercise: two journeys, a screen reference for each side, and a live demo you can play from either seat.
+
+{/* TODO(Enrico): what came of it (feedback from the hiring team, if you can share it). Reflection in your words, e.g. what you'd cut or add with a week more. */}

@@ -1,0 +1,49 @@
+---
+/**
+ * SeamHero (Kai). The WebGL2 seam over the real mark: lit relief on the left of a 45° seam,
+ * construction drawing on the right. Logic: src/scripts/seam-hero.ts (lazy, after fonts and
+ * first paint, so the h1 is the LCP). Without WebGL2 the flat mark stays (SVG fallback).
+ * Mouse: the seam follows. Touch and keyboard: the 44px slider (arrows, Home, End).
+ * Reduced motion: no sweep, no follow; the slider still works.
+ */
+import { MARK_INNER, MARK_OUTER, MARK_VIEWBOX } from '../../assets/brand/mark';
+
+interface Props {
+  name: string;
+  lede: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+const { name, lede, primary, secondary } = Astro.props;
+---
+
+<section class="hero" data-seam-hero aria-labelledby="hero-title">
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  <svg class="hero-fallback" viewBox={MARK_VIEWBOX} aria-hidden="true" focusable="false">
+    <path class="o" d={MARK_OUTER}></path><path class="i" d={MARK_INNER}></path>
+  </svg>
+  <div
+    class="seam-handle"
+    role="slider"
+    tabindex="0"
+    aria-label="Seam between render and working"
+    aria-orientation="horizontal"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="50"
+    aria-valuetext="50%: render on the left, working on the right"
+    data-seam-handle
+  >
+    <span class="lbl l" aria-hidden="true">Render</span><span class="lbl r" aria-hidden="true">Working</span>
+  </div>
+  <div class="hero-copy">
+    <h1 class="display" id="hero-title" data-hero-title data-spec="display · Archivo 560 · wdth 112 · 10vw / 0.9">{name}</h1>
+    <div class="hero-row">
+      <p class="lede" data-hero-lede data-spec="lede · 24 / 1.42 · 34ch">{lede}</p>
+      <div class="hero-actions" data-hero-actions>
+        <a class="btn" href={primary.href} data-spec="button · 48 · radius 2">{primary.label}</a>
+        {secondary && <a class="btn-quiet" href={secondary.href}>{secondary.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>

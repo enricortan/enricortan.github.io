@@ -1,0 +1,83 @@
+---
+/**
+ * Case study + lab detail layout (Kai §5): display title, claim + spec sheet, full-bleed render,
+ * MDX body (.seam-prose: cols 3–8, margin notes 10–12), outcome, next project.
+ * Protected entries: number, title and the lock gate are public; everything in CaseBody is encrypted.
+ *
+ * Seam wipe: the h1 carries data-vt-title and a static `view-transition-name: vt-<collection>-<slug>`
+ * (Kai's SeamHead pairs it with the index row that links here).
+ */
+import type { CollectionEntry } from 'astro:content';
+import Base from './Base.astro';
+import CaseBody from './partials/CaseBody.astro';
+import Protected from './partials/Protected.astro';
+import { isDev, isNoindex, isUnpublished } from '@/lib/content';
+import { ogImageFor } from '@/lib/og';
+
+interface Props {
+  entry: CollectionEntry<'work'> | CollectionEntry<'lab'>;
+  number: string;
+  next?: { href: string; title: string; number: string; locked: boolean };
+}
+const { entry, number, next } = Astro.props;
+const d = entry.data;
+const locked = d.protected;
+const og = await ogImageFor({ ...d, ogImage: entry.collection === 'work' ? entry.data.ogImage : undefined }, Astro.site);
+const description = locked ? `${d.title}: a password-protected case study.` : d.summary;
+const vtName = `vt-${entry.collection}-${entry.id}`;
+const eyebrow = entry.collection === 'work' ? 'Case study' : 'Lab';
+---
+
+<Base
+  title={d.title}
+  description={description}
+  ogImage={og.url}
+  ogImageAlt={og.alt}
+  ogType="article"
+  noindex={isNoindex(d)}
+  page={entry.collection === 'work' ? 'case' : 'lab-entry'}
+>
+  <article class="case" data-collection={entry.collection} data-slug={entry.id} data-locked={locked ? '' : undefined}>
+    {isDev && isUnpublished(d) && <p class="dev-flag" data-dev-badge>DEV: draft / pending — never built</p>}
+
+    <header class="case-head wrap">
+      <p class="case-eyebrow mono meta">
+        <span class="case-number">{number}</span> · {eyebrow}{locked && <span class="case-lock"> · Password-protected</span>}
+      </p>
+      <h1 class="case-title" data-vt-title style={`view-transition-name: ${vtName}`}>{d.title}</h1>
+    </header>
+
+    {
+      locked ? (
+        <Protected slug={entry.id}>
+          <CaseBody entry={entry} />
+        </Protected>
+      ) : (
+        <CaseBody entry={entry} />
+      )
+    }
+
+    {
+      next && (
+        <nav class="case-next sec wrap" aria-label="Next project">
+          <a href={next.href} rel="next">
+            <span class="case-next__label mono meta">Next project · {next.number}</span>
+            <span class="case-next__title">{next.title}</span>
+            {next.locked && <span class="case-next__lock mono meta">Password-protected</span>}
+          </a>
+        </nav>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .dev-flag {
+    margin: 0;
+    padding: 6px 12px;
+    font: 600 13px/1.4 ui-monospace, monospace;
+    color: #0a1426;
+    background: #ff8e6e;
+    text-align: center;
+  }
+</style>

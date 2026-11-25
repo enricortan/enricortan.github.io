@@ -1,0 +1,5 @@
+# The sealed FLNT bundle is binary: never convert line endings or diff it.
+sealed/*.sealed binary
+# Shell scripts and git hooks must keep LF endings, or sh fails on macOS/Linux (and in CI).
+.githooks/* text eol=lf
+*.sh text eol=lf

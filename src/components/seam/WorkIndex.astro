@@ -1,0 +1,100 @@
+---
+/**
+ * WorkIndex (Kai): a ruled list (number, title, role, what shipped) and a sticky preview in
+ * columns 9–12. Hover or focus a row: the preview is drawn, then built by a seam reveal
+ * (src/scripts/work-index.ts). Preview images sit in <template>s, so they load on first hover.
+ * Locked rows show a lock marker + "Password" and never a preview: their image is not even
+ * rendered into the page.
+ * Row titles carry data-vt-title: the seam wipe morphs them into the case page h1.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+
+interface Item {
+  href: string;
+  number: string;
+  title: string;
+  role: string;
+  shipped: string;
+  locked: boolean;
+  preview?: ImageMetadata;
+  previewAlt?: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<div class="work-index grid12" data-work-index>
+  <ol class="index-list" role="list">
+    {
+      items.map((it, i) => (
+        <li>
+          <a
+            class="row"
+            href={it.href}
+            data-index-row={i}
+            data-title={it.title}
+            data-number={it.number}
+            data-locked={it.locked ? '' : undefined}
+            data-w={!it.locked && it.preview ? it.preview.width : undefined}
+            data-h={!it.locked && it.preview ? it.preview.height : undefined}
+            data-spec={i === 0 ? 'index row · 44 title · hairline rule' : undefined}
+          >
+            <span class="num">{it.number}</span>
+            <span class="t" data-vt-title>{it.title}</span>
+            <span class="meta">
+              <b>{it.role}</b>
+              <span>{it.shipped}</span>
+              {it.locked && (
+                <span class="lock">
+                  <svg viewBox="0 0 12 14" aria-hidden="true" focusable="false">
+                    <rect x=".75" y="6" width="10.5" height="7.25" />
+                    <path d="M3 6V4.2a3 3 0 0 1 6 0V6" />
+                  </svg>
+                  Password<span class="vh">-protected</span>
+                </span>
+              )}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="index-preview" aria-hidden="true">
+    <div class="preview-box" data-preview-box>
+      <div class="layer drawing" data-preview-drawing>
+        <i class="dim-x"><span data-dim-w>1440</span></i>
+        <i class="dim-y"><span data-dim-h>900</span></i>
+        <div class="lock-plate">
+          <span class="lock">
+            <svg viewBox="0 0 12 14" focusable="false"><rect x=".75" y="6" width="10.5" height="7.25"></rect><path d="M3 6V4.2a3 3 0 0 1 6 0V6"></path></svg>
+            Password
+          </span>
+          <span class="mono">Shared privately. No preview.</span>
+        </div>
+      </div>
+      <div class="layer render" data-preview-render></div>
+    </div>
+    <p class="preview-cap mono" data-preview-cap>Point at a project: it is drawn, then built.</p>
+    {
+      items.map((it, i) =>
+        !it.locked && it.preview ? (
+          <template data-preview-tpl={i}>
+            <Picture
+              src={it.preview}
+              alt=""
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              widths={[480, 960].filter((w) => w <= it.preview!.width).concat(it.preview.width < 480 ? [it.preview.width] : [])}
+              sizes="(min-width: 1440px) 430px, 30vw"
+              loading="eager"
+              decoding="async"
+            />
+          </template>
+        ) : null,
+      )
+    }
+  </div>
+</div>

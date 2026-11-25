@@ -1,0 +1,18 @@
+---
+/** SpecSheet (Kai): Role / Team / Year / Tools as a ruled 4-column (2 on phone) definition list. */
+interface Props {
+  items: { label: string; value: string }[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="spec-sheet" data-spec="spec sheet · mono 13 labels · 4 cols">
+  {
+    items.map((i) => (
+      <div>
+        <dt>{i.label}</dt>
+        <dd>{i.value}</dd>
+      </div>
+    ))
+  }
+</dl>

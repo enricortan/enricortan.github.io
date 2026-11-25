@@ -1,0 +1,16 @@
+---
+/**
+ * MarginNote (Kai): the "working" beside the text: a dated decision, a token name, a ratio.
+ * In a case body (Case.astro grid) it sits in columns 10–12 on the row of the block it
+ * FOLLOWS, so place it right after the paragraph it annotates. Inline on phone.
+ */
+interface Props {
+  label?: string;
+}
+const { label } = Astro.props;
+---
+
+<div class="margin-note" role="note" data-margin-note data-spec="margin note · cols 10–12 · 15 / 1.5">
+  {label && <p class="mn-label mono">{label}</p>}
+  <div class="mn-body"><slot /></div>
+</div>

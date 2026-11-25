@@ -1,0 +1,49 @@
+---
+/**
+ * Lab cards (used on /lab/ and as the home-page strip). Protected items show title + lock only:
+ * no cover, no summary, no proof, no outbound link.
+ */
+import { Picture } from 'astro:assets';
+import { hrefFor, kindLabel, statusLabel, type Lab } from '@/lib/content';
+
+interface Props {
+  entries: Lab[];
+  variant?: 'list' | 'strip';
+  headingLevel?: 'h2' | 'h3';
+}
+const { entries, variant = 'list', headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+---
+
+<ul class:list={['lab-list', `lab-list--${variant}`]}>
+  {
+    entries.map((e) => {
+      const href = hrefFor(e);
+      const external = /^https?:\/\//.test(href);
+      const locked = e.data.protected;
+      return (
+        <li class="lab-item" id={e.id} data-locked={locked ? '' : undefined}>
+          <a class="lab-item__link" href={href} {...(external ? { rel: 'noopener' } : {})}>
+            {!locked && (
+              <Picture
+                class="lab-item__cover"
+                src={e.data.cover}
+                alt={e.data.coverAlt}
+                formats={['avif', 'webp']}
+                fallbackFormat="jpg"
+                widths={[360, 720]}
+                sizes={variant === 'strip' ? '(min-width: 960px) 25vw, 70vw' : '(min-width: 960px) 33vw, 100vw'}
+              />
+            )}
+            <H class="lab-item__title">{e.data.title}</H>
+          </a>
+          <p class="lab-item__meta">
+            {kindLabel(e)} · {statusLabel(e)} · {e.data.year}
+            {locked && <span class="lab-item__lock"> · Password-protected</span>}
+          </p>
+          {!locked && <p class="lab-item__proof">{e.data.proof}</p>}
+        </li>
+      );
+    })
+  }
+</ul>

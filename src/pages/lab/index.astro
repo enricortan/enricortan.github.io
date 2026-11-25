@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import LabList from '@/layouts/partials/LabList.astro';
+import { getLab, isListed, pageCopy } from '@/lib/content';
+
+const lab = (await getLab()).filter((e) => isListed(e.data));
+const copy = await pageCopy('lab', {
+  title: 'Lab',
+  lede: 'Tools, plugins, agent teams and experiments.',
+  description: 'Tools, plugins, agent teams and experiments by Enrico R. Tan.',
+});
+---
+
+<Base title={copy.title} description={copy.description} page="lab">
+  <section class="sec wrap">
+    <div class="grid12">
+      <header class="sec-head">
+        <h1 class="page-title">{copy.title}</h1>
+        {copy.lede && <p class="lede">{copy.lede}</p>}
+      </header>
+    </div>
+    {lab.length > 0 ? <LabList entries={lab} /> : <p class="empty">Experiments are on their way.</p>}
+  </section>
+</Base>

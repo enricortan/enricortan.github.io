@@ -1,0 +1,36 @@
+---
+title: "This site"
+summary: "enricortan.com, version two: a static Astro site where publishing is a folder, designed and built by me with a small team of AI agents."
+proof: "Treats his own portfolio as a product: an honest post-mortem, a written plan, then a rebuild."
+kind: agent-team
+status: wip
+year: 2026
+cover: ./cover.jpg
+coverAlt: "Plain navy cover, the site's Blueprint ground colour."
+confidentiality: cleared
+protected: false
+stack: ["Astro", "MDX", "TypeScript", "WebGL2", "GitHub Actions", "GitHub Pages"]
+links:
+  - label: "Source"
+    url: "https://github.com/enricortan/enricortan.github.io"
+---
+
+{/* TODO(Enrico): once v2 is live, replace the cover with the seam hero, and add the Lighthouse and size numbers from CI (sourced). Confirm the repo is public before keeping the Source link. */}
+
+## Version one, and what went wrong
+
+The first version (2025) was a React app with a Supabase database behind it and an admin dashboard, so I could edit everything without touching code. It worked, until the database project disappeared. Every case study I had written lived only in that database, and they went with it. The site fell back to its template: "Hi, I'm Your Name", a San Francisco bio I never wrote, and four made-up case studies with invented results under my name.
+
+The lesson was not "databases are bad". It was that a portfolio is a document, and a document shouldn't need a server to exist.
+
+## Version two
+
+- **No database, no server.** Every page is pre-rendered HTML, so links, search engines and previews all see the real content.
+- **Publishing is a folder.** A case study is one MDX file with its images and videos beside it. Push it, and it's live a few minutes later.
+- **The build checks the content.** A missing cover or alt text fails the build. Confidential entries ship behind a password, and anything not yet cleared doesn't ship at all.
+- **Show the working.** The design idea is "the seam": every surface has two sides, the finished render and the working that made it (grid, tokens, measurements, dated decisions), with a 45° seam between them, taken from the angle of my ER mark.
+- **Type and colour.** Archivo for reading, IBM Plex Mono only for values. A navy "Blueprint" ground, mint for lines and links, and a coral redline used as a signal, under 1% of any screen.
+
+## Who made it
+
+I made the decisions. Three AI agents did the work under an orchestrator, each in its own lane: **Nora** on content (the agent that wrote this page), **Kai** on brand and motion, and **Theo** on the build. Each wrote a study first; where they disagreed (smooth-scroll libraries, video budgets), the plan records who won and why, and I approved it before anything was built.

@@ -1,0 +1,26 @@
+/* =========================================================================
+   enricortan.com · "The Seam" · global stylesheet (Kai).
+   Imported once by src/components/seam/SeamHead.astro.
+
+   Class API for pages and layouts (Theo):
+     layout   .wrap (side margins) · .grid12 (12 columns) · .sec (section rhythm)
+              .sec-head > h2 + p (heading cols 1–6, intro cols 7–11)
+     type     .display (hero) · .page-title / .case-title (page h1) · .h2 · .h3
+              .lede · .mono (values, tokens, measurements only) · .muted · .meta
+     actions  .btn (the one primary action per view) · .btn-quiet · .link
+     case     .case-head (title, claim, spec sheet) · .seam-prose (MDX body:
+              cols 3–8, MarginNote in 10–12)
+     hooks    data-vt-title  on the case page h1 (seam-wipe title morph)
+              data-spec="…"  on anything, to label it in "Show working"
+              data-measure   on a spec zone, for the measure cursor
+   ========================================================================= */
+@import "./fonts.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./nav.css";
+@import "./hero.css";
+@import "./index.css";
+@import "./case.css";
+@import "./pages.css";
+@import "./working.css";
+@import "./transitions.css";

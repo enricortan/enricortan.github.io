@@ -1,0 +1,95 @@
+---
+/**
+ * Base document (Theo). Every page renders through this: <head> SEO + Kai's SeamHead,
+ * Nav, <main id="main">, Footer. MPA + CSS cross-document view transitions; no client router.
+ */
+import SeamHead from '@/components/seam/SeamHead.astro';
+import Nav from '@/components/seam/Nav.astro';
+import Footer from '@/components/seam/Footer.astro';
+import { getProfile, getSite, known } from '@/lib/content';
+import { DEFAULT_OG_ALT, DEFAULT_OG_PATH } from '@/lib/og';
+import { href as toHref } from '@/lib/urls';
+
+interface Props {
+  /** Page title, put through site.yaml `seo.titleTemplate`. Omit on the home page. */
+  title?: string;
+  description?: string;
+  /** Absolute URL (see src/lib/og.ts). Defaults to the brand image. */
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  publishedTime?: Date;
+  /** Adds <meta name="robots" content="noindex"> (protected, unlisted, drafts, 404). */
+  noindex?: boolean;
+  /** Absolute canonical URL when the original lives elsewhere (e.g. a LinkedIn cross-post). */
+  canonical?: string;
+  /** Path used for the nav's current item. Defaults to the request path. */
+  current?: string;
+  /** Hook for page-level styling, e.g. data-page="case". */
+  page?: string;
+}
+
+const {
+  title,
+  description,
+  ogImage,
+  ogImageAlt,
+  ogType = 'website',
+  publishedTime,
+  noindex = false,
+  canonical: canonicalOverride,
+  current = Astro.url.pathname,
+  page,
+} = Astro.props;
+
+const profile = await getProfile();
+const site = await getSite();
+
+const titleTemplate = site.seo?.titleTemplate ?? `%s · ${site.title}`;
+const defaultTitle = site.seo?.defaultTitle ?? `${profile.name} · ${profile.tagline ?? profile.headline}`;
+const fullTitle = title ? titleTemplate.replace('%s', title) : defaultTitle;
+const desc = description ?? site.seo?.description ?? profile.headline;
+const canonical = canonicalOverride ?? new URL(Astro.url.pathname, Astro.site).href;
+const seoOg = site.seo?.ogImage;
+const siteOg = known(seoOg) ? seoOg : DEFAULT_OG_PATH;
+const og = ogImage ?? new URL(siteOg, Astro.site).href;
+const ogAlt = ogImageAlt ?? (ogImage ? '' : DEFAULT_OG_ALT);
+const nav = site.nav.map((i) => ({ label: i.label, href: toHref(i.href) }));
+// Links still missing (or TODO) are hidden, never rendered empty.
+const socials = profile.socials.flatMap((s) => (known(s.url) ? [{ label: s.label, href: s.url }] : []));
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title ?? defaultTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    {ogAlt && <meta property="og:image:alt" content={ogAlt} />}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="alternate" type="application/rss+xml" title={`${profile.name} — Notes`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <SeamHead />
+    <slot name="head" />
+  </head>
+  <body data-page={page}>
+    <a class="skip" href="#main">Skip to content</a>
+    <Nav items={nav} current={current} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer email={known(profile.email) ? profile.email : ""} socials={socials} />
+  </body>
+</html>

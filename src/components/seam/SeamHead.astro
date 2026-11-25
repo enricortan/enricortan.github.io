@@ -1,0 +1,115 @@
+---
+/**
+ * SeamHead (Kai). No props; goes in <head>.
+ * - font preloads (self-hosted, public/fonts)
+ * - theme boot before first paint: saved choice > system preference > dark
+ * - "Show working" restored for this tab (sessionStorage) before first paint
+ * - favicons + manifest
+ * - global CSS (src/styles/global.css), incl. @view-transition { navigation: auto }
+ * - the seam-wipe pairing for cross-document view transitions (pageswap / pagereveal)
+ * - the one client entry (src/scripts/seam.ts): every interactive piece inits from it on
+ *   DOMContentLoaded and on `protected:unlocked`, so components inside encrypted
+ *   bodies work after unlock without scripts of their own.
+ */
+import '../../styles/global.css';
+---
+
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#0A1426" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#EEF2F1" media="(prefers-color-scheme: light)" />
+<link rel="preload" href="/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/er-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/favicon.webmanifest" />
+
+<script is:inline>
+  /* Theme + working mode before first paint. Keys: er-theme (localStorage), er-working (sessionStorage). */
+  (function () {
+    var d = document.documentElement, t = null;
+    d.classList.add('js');
+    try { t = localStorage.getItem('er-theme'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    d.setAttribute('data-theme', t);
+    try { if (sessionStorage.getItem('er-working') === '1') d.classList.add('working'); } catch (e) {}
+
+    /* Seam wipe (cross-document view transitions).
+       Direction: "out" for back/forward traversal to an earlier entry or a move up to a
+       parent path; "in" otherwise. Title morph: only one pair gets a name, so nothing
+       else escapes the wipe. The case page h1 carries a static vt-<collection>-<slug>
+       name (Case.astro); index rows get theirs only for the transition. */
+    var KEY = 'er-vt-pair';
+    function path(u) { try { return new URL(u, location.href).pathname; } catch (e) { return ''; } }
+    function vtName(p) { var m = /^\/(work|lab|notes)\/([^/]+)\/?$/.exec(p); return m ? 'vt-' + m[1] + '-' + m[2] : ''; }
+    function titleIn(link) {
+      if (!link) return null;
+      if (link.style.viewTransitionName && link.style.viewTransitionName.indexOf('vt-') === 0) return link;
+      return link.querySelector('[data-vt-title], .case-next__title, .t');
+    }
+    function linkTo(p) {
+      var as = document.querySelectorAll('a[href]');
+      for (var i = 0; i < as.length; i++) if (path(as[i].href) === p) { if (titleIn(as[i])) return as[i]; }
+      return null;
+    }
+    function nameEl(el, n) { if (el) { el.style.viewTransitionName = n; el.style.viewTransitionClass = 'case-title'; } }
+    function pageTitle() { return document.querySelector('h1[data-vt-title], h1.case-title, h1[style*="view-transition-name"]'); }
+    function clearStatic(keep) {
+      var all = document.querySelectorAll('[style*="view-transition-name"]');
+      for (var i = 0; i < all.length; i++) {
+        var n = all[i].style.viewTransitionName;
+        if (n && n.indexOf('vt-') === 0 && n !== keep) all[i].style.viewTransitionName = 'none';
+      }
+    }
+    function dir(fromP, toP, type, fromIdx, toIdx) {
+      if (type === 'traverse' && toIdx < fromIdx) return 'out';
+      if (fromP !== toP && fromP.indexOf(toP) === 0) return 'out';
+      return 'in';
+    }
+    addEventListener('pageswap', function (e) {
+      if (!e.viewTransition) return;
+      var act = e.activation, to = act && act.entry ? path(act.entry.url) : '';
+      var from = location.pathname, pair = '';
+      var target = vtName(to), here = vtName(from);
+      if (target) {
+        var row = titleIn(linkTo(to));
+        if (row) { pair = target; nameEl(row, target); }
+      } else if (here && from.indexOf(to) === 0) {
+        /* leaving a case page for a page that may list it (an ancestor path) */
+        pair = here; nameEl(pageTitle(), here);
+      }
+      clearStatic(pair);
+      try { sessionStorage.setItem(KEY, pair); } catch (err) {}
+    });
+    addEventListener('pagereveal', function (e) {
+      if (!e.viewTransition) return;
+      var pair = '';
+      try { pair = sessionStorage.getItem(KEY) || ''; sessionStorage.removeItem(KEY); } catch (err) {}
+      var nav = window.navigation, act = nav && nav.activation;
+      var fromP = act && act.from ? path(act.from.url) : '', toP = location.pathname;
+      var type = act ? act.navigationType : 'push';
+      var fromIdx = act && act.from ? act.from.index : 0, toIdx = act && act.entry ? act.entry.index : 0;
+      if (pair && vtName(toP) === pair) {
+        nameEl(pageTitle(), pair);
+      } else if (pair) {
+        /* arriving at an index: name the row for the case we came from */
+        var row = titleIn(linkTo(fromP));
+        if (row && vtName(fromP) === pair) nameEl(row, pair); else pair = '';
+      }
+      clearStatic(pair);
+      d.setAttribute('data-vt', dir(fromP, toP, type, fromIdx, toIdx));
+      e.viewTransition.finished.finally(function () {
+        d.removeAttribute('data-vt');
+        var named = document.querySelectorAll('[style*="view-transition-name"]');
+        for (var i = 0; i < named.length; i++) {
+          if (named[i].closest('a')) { named[i].style.viewTransitionName = ''; named[i].style.viewTransitionClass = ''; }
+        }
+      });
+    });
+  })();
+</script>
+<script>
+  import '../../scripts/seam';
+</script>

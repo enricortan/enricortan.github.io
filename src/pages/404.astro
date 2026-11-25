@@ -1,0 +1,51 @@
+---
+/**
+ * 404. GitHub Pages serves dist/404.html for every unknown path. Exact old URLs have static
+ * redirect pages (astro.config.mjs); the wildcard ones (/thoughts/*, /admin*) are forwarded here.
+ * Rules come from src/data/site.yaml `redirects` via src/lib/urls.ts.
+ */
+import Base from '@/layouts/Base.astro';
+import { getSite } from '@/lib/content';
+import { href, readRedirects } from '@/lib/urls';
+
+const site = await getSite();
+const copy = site.notFound ?? {};
+const { wildcard, exact } = readRedirects(process.cwd());
+const rules = [
+  ...Object.entries(exact).map(([from, to]) => ({ prefix: from.toLowerCase(), to, exact: true })),
+  ...wildcard.map((w) => ({ prefix: w.prefix.toLowerCase(), to: w.to, exact: false })),
+];
+const back = copy.cta ? { label: copy.cta.label, href: href(copy.cta.href) } : { label: 'Back to the work', href: '/work/' };
+---
+
+<Base title="Page not found" description="This page doesn’t exist, or it moved." noindex page="not-found">
+  <script is:inline define:vars={{ rules }}>
+    (function () {
+      var p = location.pathname.toLowerCase();
+      var bare = p.replace(/\/+$/, '') || '/';
+      for (var i = 0; i < rules.length; i++) {
+        var r = rules[i];
+        if (r.exact ? bare === r.prefix : p.indexOf(r.prefix) === 0) {
+          location.replace(r.to);
+          return;
+        }
+      }
+    })();
+  </script>
+  <section class="sec wrap not-found">
+    <div class="grid12">
+      <header class="sec-head">
+        <p class="mono">404</p>
+        <h1 class="page-title">{copy.title ?? 'Nothing at this address'}</h1>
+        <p class="lede">{copy.body ?? 'This page doesn’t exist, or it moved when the site was rebuilt.'}</p>
+      </header>
+    </div>
+    <p><a class="btn" href={back.href}>{back.label}</a></p>
+    <ul class="not-found__links">
+      <li><a class="link" href="/">Home</a></li>
+      <li><a class="link" href="/work/">Work</a></li>
+      <li><a class="link" href="/lab/">Lab</a></li>
+      <li><a class="link" href="/notes/">Notes</a></li>
+    </ul>
+  </section>
+</Base>

@@ -1,0 +1,31 @@
+---
+import Case from '@/layouts/Case.astro';
+import { getWork, hrefFor, isListed, pad } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const all = await getWork();
+  const listed = all.filter((e) => isListed(e.data));
+  return all.map((entry) => {
+    const i = listed.indexOf(entry);
+    // Next project cycles through the listed entries; unlisted pages point at the first one.
+    const next = i >= 0 ? (listed.length > 1 ? listed[(i + 1) % listed.length] : undefined) : listed[0];
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        number: pad((i >= 0 ? i : all.indexOf(entry)) + 1),
+        next: next && {
+          href: hrefFor(next),
+          title: next.data.title,
+          number: pad(listed.indexOf(next) + 1),
+          locked: next.data.protected,
+        },
+      },
+    };
+  });
+}
+
+const { entry, number, next } = Astro.props;
+---
+
+<Case entry={entry} number={number} next={next} />

@@ -1,0 +1,16 @@
+#!/bin/sh
+# enricortan.com pre-commit hook. Installed by `npm install` / `npm ci`
+# (package.json "prepare" runs: git config core.hooksPath .githooks).
+#
+# 1. Blocks the commit if the unencrypted FLNT source (src/content-private/) or a public entry with
+#    `protected: true` is staged, or a file name would break a Windows checkout.
+# 2. Seals src/content-private/ into sealed/content-private.sealed when it changed, and stages it.
+# Use a plain `git commit` (with `git commit <paths>` git may not include the re-sealed bundle).
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+node scripts/guard.mjs --pre-commit || { echo "pre-commit: blocked, nothing was committed."; exit 1; }
+node scripts/seal.mjs --if-changed || { echo "pre-commit: sealing failed, commit aborted."; exit 1; }
+if [ -f sealed/content-private.sealed ]; then
+  git add sealed/content-private.sealed
+fi

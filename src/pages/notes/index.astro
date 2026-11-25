@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import NoteList from '@/layouts/partials/NoteList.astro';
+import { getNotes, isListed, pageCopy } from '@/lib/content';
+
+const notes = (await getNotes()).filter((e) => isListed(e.data));
+const copy = await pageCopy('notes', {
+  title: 'Notes',
+  lede: 'Writing on how the work gets made.',
+  description: 'Notes by Enrico R. Tan on design systems, shipping, and working with AI agents.',
+});
+---
+
+<Base title={copy.title} description={copy.description} page="notes">
+  <section class="sec wrap">
+    <div class="grid12">
+      <header class="sec-head">
+        <h1 class="page-title">{copy.title}</h1>
+        {copy.lede && <p class="lede">{copy.lede} <a href="/rss.xml">RSS feed</a></p>}
+      </header>
+    </div>
+    {notes.length > 0 ? <NoteList entries={notes} /> : <p class="empty">The first notes are being written.</p>}
+  </section>
+</Base>

@@ -1,0 +1,53 @@
+/* Self-hosted fonts (public/fonts, sources and licence in public/fonts/LICENSE.md).
+   Archivo: one variable file, wght 400–600, wdth 100–112, Latin.
+   ER Mono: IBM Plex Mono 400/500, Latin subset, renamed for the OFL Reserved Font Name. */
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin-var.woff2") format("woff2-variations"),
+       url("/fonts/archivo-latin-var.woff2") format("woff2");
+  font-weight: 400 600;
+  font-stretch: 100% 112%;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ER Mono";
+  src: url("/fonts/er-mono-latin-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ER Mono";
+  src: url("/fonts/er-mono-latin-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Metric-matched fallbacks, so the swap doesn't move the page (CLS < 0.05).
+   Values measured with fontTools against Archivo wght 400 / wdth 100 and Plex Mono 400. */
+@font-face {
+  font-family: "Archivo Fallback";
+  src: local("Arial"), local("ArialMT"), local("Helvetica Neue"), local("Helvetica"), local("Roboto");
+  size-adjust: 98.64%;
+  ascent-override: 89.01%;
+  descent-override: 21.29%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "ER Mono Fallback";
+  src: local("Consolas");
+  size-adjust: 109.13%;
+  ascent-override: 93.92%;
+  descent-override: 25.2%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "ER Mono Fallback 2";
+  src: local("Menlo"), local("Courier New"), local("CourierNewPSMT");
+  size-adjust: 99.98%;
+  ascent-override: 102.52%;
+  descent-override: 27.5%;
+  line-gap-override: 0%;
+}

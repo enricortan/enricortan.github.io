@@ -1,0 +1,101 @@
+---
+title: "OMG! Own My Goals"
+summary: "Goal-based savings in the CIMB Bank PH app: pick a theme, set a target and a schedule, let it save itself, and celebrate the milestones."
+hook: "Name the goal. Let it save itself."
+client: "CIMB Bank PH"
+role: ["UI/UX design lead", "Product owner"] # TODO(Enrico): your title at CIMB per the timeline; confirm your role on OMG specifically
+year: 2024 # TODO(Enrico): unconfirmed. Inferred only from a sample date inside the mock-ups ("Sep 11, 2024"). Replace with the real year.
+status: concept # TODO(Enrico): deliberately conservative. Set to "shipped" if OMG went live, and say when.
+type: product
+tools: ["Figma"] # TODO(Enrico): add the rest of the toolkit you used on this project
+cover: ./cover.jpg
+coverAlt: "OMG! Own My Goals key visual: a young woman cheers at her phone beside the OMG logo, a target with an arrow, on CIMB red."
+# No coverVideo on purpose: the layout uses coverAlt as the cover video's description, and this alt describes the key visual, not the loop.
+# The theme-carousel loop opens the body instead.
+featured: true
+order: 3
+visibility: public
+confidentiality: cleared
+protected: false
+disclaimer: "The original write-up was lost with an old database. This page shows what the surviving design files show; the rest is being confirmed."
+related: ["cimb-pay"]
+updated: 2026-11-25
+---
+
+import featureBoard from './01-feature-board.jpg'
+import loop from './loop.mp4'
+import poster from './poster.webp'
+import loopPortrait from './loop-portrait.mp4'
+import posterPortrait from './poster-portrait.webp'
+
+{/* TODO(Enrico): the original write-up is being recovered. When it is, add from it (and only from it):
+    the problem and who it was for, your exact role on OMG, the team (roles only), dates, launch status,
+    and any outcome with a source. Until then this stays a visual case study. */}
+
+<Video h264={loop} poster={poster} description="A phone shows the Choose a Savings Theme screen. A finger swipes through the themes: Savings with a red wallet on white, Travel with a plane on teal, Education with a stack of books on pink, Car Maintenance with a car on orange, Food with a grocery bag on purple. Each theme changes the whole background colour." />
+
+## Context
+
+OMG! Own My Goals is a savings feature inside the CIMB Bank PH app. In the app's home screen it has its own entry, "Own My Goals! Start your savings goals today!", between the quick actions and the account tiles.
+
+Its landing makes four promises, in this order:
+
+1. Achieve your goals faster with high-interest savings products.
+2. Stay on track using Auto Save and Reminder features.
+3. Personalize your goals with your preferred templates.
+4. Celebrate your goal milestones.
+
+Below them it points to three of the bank's savings products: GSave, UpSave and GROW.
+
+## The flow
+
+<Figure src={featureBoard} alt="Eleven phone screens of OMG on a red background: the landing with four promises and three savings products; an active-goals dashboard with four goals at 65%; a video screen, 'Achieve your goals faster!'; theme pickers for a new gadget, a wedding and tuition; a custom colour and emoji picker; savings frequency; auto save and reminder; a tuition goal's progress with milestones; and a Goal Achieved celebration." caption="The OMG feature board. Amounts and dates are sample values in the mock-ups." />
+
+The screens walk through one goal from start to finish:
+
+- **Start.** The landing, then a dashboard of active goals. Each goal is a card with its own icon, a progress ring, the days left, the amount saved out of the target, and a "You're on track" status.
+- **Name it.** "Choose a Savings Theme": a carousel of categories, each with its own 3D object and background colour, from a new gadget and a wedding to tuition. A custom colour and a custom emoji are one tap away.
+- **Plan it.** "Set your savings frequency": weekly, every other week or monthly. The screen shows how much to save per period to reach the target, with all three options compared underneath.
+- **Automate it.** "Auto save and reminder": Auto save comes first and moves money on schedule from an account you pick. Manual, with reminders, is the alternative.
+- **Watch it.** The goal's page: days left, Cash-in and Withdraw, progress against the target, and four milestones along the way.
+- **Finish it.** "Goal Achieved!", with a trophy and fireworks, then a choice: view the goal's details or open a new goal.
+
+## Key decisions, as the screens show them
+
+{/* TODO(Enrico): for each decision below, add the why and the trade-off, in your words. Nothing is inferred here beyond what is on screen. */}
+
+### 1. A goal has a face
+
+Every goal gets a theme before it gets a number: an object and a colour for travel, tuition or a car, or your own colour and emoji. The goal's object follows it onto the dashboard card and its detail page.
+
+<Video h264={loopPortrait} poster={posterPortrait} description="Close-up of the theme carousel: Savings, Travel, Education, Food and Car Maintenance slide past, each with its own colour and 3D object. A Custom Emoji button sits at the bottom." />
+
+### 2. The app does the arithmetic
+
+The frequency screen leads with the answer, the amount to save per period, and lists what the other two frequencies would cost underneath.
+
+### 3. Automatic first, manual second
+
+Auto save is the first and larger option, with the source account and the schedule on the same card. Manual saving, with reminders, sits under it.
+
+### 4. Progress is something to celebrate
+
+Goals carry milestones and an on-track status, and finishing one gets a full-screen celebration.
+
+### 5. Goals sit on real products
+
+OMG points to the bank's savings products, GSave, UpSave and GROW, from its landing and its promo screen. In the CIMB Pay designs, an account used by a goal is flagged "Linked to a goal" when you pick where to pay from.
+
+## Process
+
+A design sprint workshop with the team set much of the direction.
+
+{/* TODO(Enrico): the sprint photo board (omgds.png in the legacy assets) shows identifiable colleagues. Add it only with their OK, or with faces cropped out. Then add 2–3 process beats: research, testing, handoff. */}
+
+## My role
+
+At CIMB Bank PH I was the UI/UX Design Lead and later also Product Owner, responsible for the Figma design system and for features from discovery to release.
+
+{/* TODO(Enrico): what you personally designed on OMG, and what others did (as roles). Did you design the campaign key visual on the cover? If not, credit it or swap the cover for a product screen. */}
+
+{/* TODO(Enrico): Outcome — only sourced figures (launch date, sign-ups, goals created). Reflection — in your words. */}

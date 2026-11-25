@@ -1,0 +1,105 @@
+# Build on every push / PR; deploy to GitHub Pages only from main.
+#
+# One-time repo settings (Enrico, see README "Deploy"):
+#   Settings -> Pages -> Build and deployment -> Source = "GitHub Actions"
+#   Settings -> Pages -> Custom domain = enricortan.com, Enforce HTTPS on
+#   Settings -> Environments -> github-pages -> Deployment branches = main only
+#   Settings -> Secrets and variables -> Actions -> repository secrets PROTECTED_PASSWORD and CONTENT_KEY
+#
+# Security: no personal access tokens. The build job can only read the repo; the deploy job
+# can only write Pages (OIDC). Third-party actions are pinned to full commit SHAs.
+# CONTENT_KEY opens sealed/content-private.sealed (the FLNT source) into src/content-private/ on the
+# runner only; PROTECTED_PASSWORD encrypts those pages in the built site. Neither is ever printed.
+# Pull requests from forks get no secrets, so they fail at "Unseal" by design.
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  ASTRO_TELEMETRY_DISABLED: 1
+  NODE_VERSION: 24
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Unseal the protected (FLNT) source
+        run: npm run unseal
+        env:
+          CONTENT_KEY: ${{ secrets.CONTENT_KEY }}
+
+      # File names, nothing private tracked, unsealed tree matches the bundle, CONTENT_KEY present,
+      # no TODO(Enrico) values left in src/data.
+      - name: Guards
+        run: npm run guard
+        env:
+          CONTENT_KEY: ${{ secrets.CONTENT_KEY }}
+
+      - name: Type + content schema check
+        run: npx astro check
+
+      - name: Build (protected pages are encrypted with the repo secret)
+        run: npm run build
+        env:
+          PROTECTED_PASSWORD: ${{ secrets.PROTECTED_PASSWORD }}
+
+      - name: Verify no protected plaintext in the output (and that payloads decrypt)
+        run: npm run verify
+        env:
+          PROTECTED_PASSWORD: ${{ secrets.PROTECTED_PASSWORD }}
+
+      - name: Check internal links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --offline --no-progress
+            --root-dir ${{ github.workspace }}/dist
+            'dist/**/*.html'
+          fail: true
+
+      # On pull requests this artifact doubles as the preview: download it from the run,
+      # unzip into dist/ and run `npm run preview`.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

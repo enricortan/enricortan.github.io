@@ -1,0 +1,60 @@
+---
+/**
+ * Nav (Kai). Sticky bar: lockup, links, "Show working" switch, theme toggle.
+ * Must be a direct child of <body> (position: sticky). Phone: a Menu button opens
+ * a popover sheet with the links and both switches (no JS needed to open it).
+ * Also renders the 12-column "Show working" overlay.
+ */
+import Mark from './Mark.astro';
+
+interface Props {
+  items: { label: string; href: string }[];
+  current: string;
+}
+const { items, current } = Astro.props;
+
+const norm = (p: string) => {
+  const path = p.split(/[?#]/)[0] || '/';
+  return path.endsWith('/') ? path : path + '/';
+};
+const here = norm(current);
+const state = (href: string): 'page' | 'true' | undefined => {
+  const h = norm(href);
+  if (h === here) return 'page';
+  if (h !== '/' && here.startsWith(h)) return 'true';
+  return undefined;
+};
+---
+
+<header class="nav" data-nav>
+  <a class="brand" href="/" aria-label="Enrico R. Tan, home">
+    <Mark />
+    <span aria-hidden="true">Enrico R. Tan</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    {items.map((i) => <a href={i.href} aria-current={state(i.href)}>{i.label}</a>)}
+  </nav>
+  <div class="nav-tools">
+    <button class="tool" type="button" role="switch" aria-checked="false" data-working-toggle data-spec="switch · html.working · CSS only">
+      <span class="sw-dot" aria-hidden="true"></span>Show working
+    </button>
+    <button class="tool" type="button" data-theme-toggle aria-label="Switch to the light theme">Light</button>
+  </div>
+
+  <button class="tool nav-menu-btn" type="button" popovertarget="nav-menu" aria-controls="nav-menu">Menu</button>
+  <div class="nav-menu" id="nav-menu" popover>
+    <nav aria-label="Primary">
+      {items.map((i) => <a href={i.href} aria-current={state(i.href)}>{i.label}</a>)}
+    </nav>
+    <div class="nav-tools">
+      <button class="tool" type="button" role="switch" aria-checked="false" data-working-toggle>
+        <span class="sw-dot" aria-hidden="true"></span>Show working
+      </button>
+      <button class="tool" type="button" data-theme-toggle aria-label="Switch to the light theme">Light</button>
+    </div>
+  </div>
+</header>
+<div class="cols" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>

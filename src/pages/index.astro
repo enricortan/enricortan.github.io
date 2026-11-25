@@ -1,0 +1,175 @@
+---
+/**
+ * Home. Copy comes from src/data/site.yaml `home.*` (Nora); facts from profile.yaml.
+ * Order (Nora §5): hero, selected work, how I work, lab strip, latest note, short bio, contact.
+ */
+import Base from '@/layouts/Base.astro';
+import SeamHero from '@/components/seam/SeamHero.astro';
+import WorkIndex from '@/components/seam/WorkIndex.astro';
+import LabList from '@/layouts/partials/LabList.astro';
+import NoteList from '@/layouts/partials/NoteList.astro';
+import { getLab, getNotes, getProfile, getSite, getWork, isListed, known, toIndexItems } from '@/lib/content';
+import { href } from '@/lib/urls';
+
+const profile = await getProfile();
+const site = await getSite();
+const home = site.home ?? {};
+const hero = home.hero ?? {};
+
+const listedWork = (await getWork()).filter((e) => isListed(e.data));
+const featured = listedWork.filter((e) => e.data.featured);
+const selected = (featured.length ? featured : listedWork).slice(0, 5);
+
+const lab = (await getLab()).filter((e) => isListed(e.data));
+const labStrip = [...lab.filter((e) => e.data.featured), ...lab.filter((e) => !e.data.featured)].slice(0, 6);
+
+// Home only features a public note.
+const latestNote = (await getNotes()).find((n) => isListed(n.data) && !n.data.protected);
+
+type Cta = { label: string; href: string };
+const cta = (c: Cta | undefined, fallback: Cta): Cta => {
+  const v = c ?? fallback;
+  return { label: v.label, href: href(v.href) };
+};
+const how = home.howIWork;
+const howId = how?.id ?? 'how-i-work';
+const contactId = home.contact?.id ?? 'contact';
+const shortBio = home.about?.body ?? profile.bioShort ?? profile.bio[0];
+const socials = profile.socials.flatMap((s) => (known(s.url) ? [{ label: s.label, url: s.url }] : []));
+const email = known(profile.email) ? profile.email : undefined;
+
+const workMore = cta(home.selectedWork?.cta, { label: 'All work', href: '/work/' });
+const labMore = cta(home.lab?.cta, { label: 'All lab', href: '/lab/' });
+const notesMore = cta(home.notes?.cta, { label: 'All notes', href: '/notes/' });
+const aboutMore = cta(home.about?.cta, { label: 'More about me', href: '/about/' });
+---
+
+<Base page="home">
+  <SeamHero
+    name={profile.name}
+    lede={hero.lede ?? profile.headline}
+    primary={cta(hero.primaryCta, { label: 'See the work', href: '/work/' })}
+    secondary={cta(hero.secondaryCta, { label: 'Get in touch', href: `#${contactId}` })}
+  />
+
+  {
+    selected.length > 0 && (
+      <section class="sec wrap home-section home-work" id="work" aria-labelledby="home-work">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="home-work">{home.selectedWork?.heading ?? 'Selected work'}</h2>
+            {home.selectedWork?.intro && <p>{home.selectedWork.intro}</p>}
+          </header>
+        </div>
+        <WorkIndex items={toIndexItems(selected)} />
+        <p class="section-more">
+          <a class="btn-quiet" href={workMore.href}>{workMore.label}</a>
+        </p>
+      </section>
+    )
+  }
+
+  {
+    how && (
+      <section class="sec wrap home-section how-i-work" id={howId} aria-labelledby="home-how">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="home-how">{how.heading}</h2>
+            {how.lede && <p>{how.lede}</p>}
+          </header>
+        </div>
+        <ol class="how-list grid12">
+          {how.steps.map((step, i) => (
+            <li class="how-item">
+              <p class="how-item__label mono meta">
+                {String(i + 1).padStart(2, '0')} · {step.label}
+              </p>
+              <h3 class="how-item__title">{step.title}</h3>
+              <p class="how-item__body">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+        {how.cta && (
+          <p class="section-more">
+            <a class="btn-quiet" href={href(how.cta.href)}>{how.cta.label}</a>
+          </p>
+        )}
+      </section>
+    )
+  }
+
+  {
+    labStrip.length > 0 && (
+      <section class="sec wrap home-section home-lab" aria-labelledby="home-lab">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="home-lab">{home.lab?.heading ?? 'Lab'}</h2>
+            {home.lab?.intro && <p>{home.lab.intro}</p>}
+          </header>
+        </div>
+        <LabList entries={labStrip} variant="strip" headingLevel="h3" />
+        <p class="section-more">
+          <a class="btn-quiet" href={labMore.href}>{labMore.label}</a>
+        </p>
+      </section>
+    )
+  }
+
+  {
+    latestNote && (
+      <section class="sec wrap home-section home-note" aria-labelledby="home-note">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="home-note">{home.notes?.heading ?? 'Latest note'}</h2>
+            {home.notes?.intro && <p>{home.notes.intro}</p>}
+          </header>
+        </div>
+        <NoteList entries={[latestNote]} headingLevel="h3" />
+        <p class="section-more">
+          <a class="btn-quiet" href={notesMore.href}>{notesMore.label}</a>
+        </p>
+      </section>
+    )
+  }
+
+  <section class="sec wrap home-section home-bio" aria-labelledby="home-bio">
+    <div class="grid12">
+      <header class="sec-head">
+        <h2 id="home-bio">{home.about?.heading ?? 'About'}</h2>
+      </header>
+    </div>
+    <p class="lede home-bio__text">{shortBio}</p>
+    <p class="section-more">
+      <a class="btn-quiet" href={aboutMore.href}>{aboutMore.label}</a>
+    </p>
+  </section>
+
+  <section class="sec wrap home-section contact" id={contactId} aria-labelledby="home-contact">
+    <div class="grid12">
+      <header class="sec-head">
+        <h2 id="home-contact">{home.contact?.heading ?? 'Contact'}</h2>
+        {home.contact?.body && <p>{home.contact.body}</p>}
+      </header>
+    </div>
+    {known(profile.availability) && <p class="contact__availability meta">{profile.availability}</p>}
+    {
+      email && (
+        <p class="contact__email">
+          <a class="btn" href={`mailto:${email}`}>{home.contact?.emailLabel ?? 'Email me'}</a>
+          <span class="contact__address mono">{email}</span>
+        </p>
+      )
+    }
+    {
+      socials.length > 0 && (
+        <ul class="contact__socials">
+          {socials.map((s) => (
+            <li>
+              <a class="link" href={s.url} rel="me noopener">{s.label}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>

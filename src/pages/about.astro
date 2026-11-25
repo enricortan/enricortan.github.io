@@ -1,0 +1,137 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import { getProfile, known, pageCopy } from '@/lib/content';
+
+const profile = await getProfile();
+const copy = await pageCopy('about', { title: 'About', description: `About ${profile.name}: ${profile.headline}` });
+/** Renders what exists: "2021-06 – 2024", "2021-06 – Present" (end: null), "2021-06", "until 2016", or nothing. */
+const range = (e: { start?: string; end?: string | null }) => {
+  const start = known(e.start) ? e.start : undefined;
+  const end = e.end === null ? 'Present' : known(e.end) ? e.end : undefined;
+  if (start && end) return `${start} – ${end}`;
+  if (start) return start;
+  if (end) return end === 'Present' ? 'Present' : `until ${end}`;
+  return '';
+};
+---
+
+<Base title={copy.title} description={copy.description} page="about">
+  <section class="sec wrap about-head">
+    <div class="grid12">
+      <header class="sec-head">
+        <h1 class="page-title">{copy.title}</h1>
+        {copy.lede && <p class="lede">{copy.lede}</p>}
+      </header>
+    </div>
+  </section>
+
+  <section class="sec wrap about-bio" aria-label="Bio">
+    {
+      profile.photo && (
+        <Picture
+          class="about-portrait"
+          src={profile.photo}
+          alt={profile.photoAlt ?? `Portrait of ${profile.name}`}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          widths={[320, 640, 960]}
+          sizes="(min-width: 960px) 33vw, 100vw"
+          loading="eager"
+        />
+      )
+    }
+    <div class="about-bio__text">
+      {profile.bio.map((p, i) => <p class={i === 0 ? 'lede' : undefined}>{p}</p>)}
+      {known(profile.location) && <p class="about-location meta">Based in {profile.location}.</p>}
+      {known(profile.cv) && <p><a class="link" href={profile.cv}>Download CV (PDF)</a></p>}
+    </div>
+  </section>
+
+  {
+    profile.experience.length > 0 && (
+      <section class="sec wrap about-section" aria-labelledby="about-experience">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="about-experience">Experience</h2>
+          </header>
+        </div>
+        <ol class="experience-list">
+          {profile.experience.map((e) => (
+            <li class="experience-item">
+              {range(e) && <p class="experience-item__dates mono meta">{range(e)}</p>}
+              <h3 class="experience-item__role">
+                {e.role}, <span class="experience-item__company">{e.company}</span>
+              </h3>
+              {e.location && <p class="experience-item__location">{e.location}</p>}
+              {e.summary && <p class="experience-item__summary">{e.summary}</p>}
+              {e.highlights.length > 0 && (
+                <ul class="experience-item__highlights">
+                  {e.highlights.map((h) => <li>{h}</li>)}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+
+  {
+    profile.skills.length > 0 && (
+      <section class="sec wrap about-section" aria-labelledby="about-skills">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="about-skills">Toolkit</h2>
+          </header>
+        </div>
+        {profile.skills.every((s) => typeof s === 'string') ? (
+          <ul class="skill-list">{profile.skills.map((s) => <li>{s as string}</li>)}</ul>
+        ) : (
+          <dl class="skill-groups">
+            {profile.skills.map((s) =>
+              typeof s === 'string' ? (
+                <div class="skill-group"><dt class="visually-hidden">Skill</dt><dd>{s}</dd></div>
+              ) : (
+                <div class="skill-group">
+                  <dt>{s.group}</dt>
+                  <dd>{s.items.join(', ')}</dd>
+                </div>
+              ),
+            )}
+          </dl>
+        )}
+      </section>
+    )
+  }
+
+  {
+    profile.speaking.length > 0 && (
+      <section class="sec wrap about-section" aria-labelledby="about-speaking">
+        <div class="grid12">
+          <header class="sec-head">
+            <h2 id="about-speaking">Speaking</h2>
+          </header>
+        </div>
+        <ul class="speaking-list">
+          {profile.speaking.map((t) => (
+            <li>
+              <h3 class="speaking-item__title">{known(t.url) ? <a class="link" href={t.url}>{t.title}</a> : t.title}</h3>
+              <p class="speaking-item__meta mono meta">{[t.kind, t.event, t.date].filter(Boolean).join(' · ')}</p>
+              {t.summary && <p class="speaking-item__summary">{t.summary}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="sec wrap about-section" aria-labelledby="about-contact">
+    <div class="grid12">
+      <header class="sec-head">
+        <h2 id="about-contact">Contact</h2>
+      </header>
+    </div>
+    {known(profile.email) ? <p><a class="link" href={`mailto:${profile.email}`}>{profile.email}</a></p> : <p class="meta">Contact details coming soon.</p>}
+  </section>
+</Base>

@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import WorkIndex from '@/components/seam/WorkIndex.astro';
+import { getWork, isListed, pageCopy, toIndexItems } from '@/lib/content';
+
+const work = (await getWork()).filter((e) => isListed(e.data));
+const copy = await pageCopy('work', {
+  title: 'Work',
+  lede: 'Selected case studies. Some are password-protected while the work is under wraps.',
+  description: 'Selected case studies: products, design systems and tools designed and built by Enrico R. Tan.',
+});
+---
+
+<Base title={copy.title} description={copy.description} page="work">
+  <section class="sec wrap">
+    <div class="grid12">
+      <header class="sec-head">
+        <h1 class="page-title">{copy.title}</h1>
+        {copy.lede && <p class="lede">{copy.lede}</p>}
+      </header>
+    </div>
+    {work.length > 0 ? <WorkIndex items={toIndexItems(work)} /> : <p class="empty">Case studies are on their way.</p>}
+  </section>
+</Base>

@@ -1,0 +1,47 @@
+---
+/**
+ * Footer (Kai): a designed close. The mark cut by the seam at rest: rendered on the left of a
+ * 45° redline, drawn on the right. The email is the one big action; socials; a colophon.
+ * Placeholder values (empty, "TODO…", not an address/URL) are never printed.
+ */
+import { MARK_INNER, MARK_OUTER, MARK_VIEWBOX } from '../../assets/brand/mark';
+
+interface Props {
+  email: string;
+  socials: { label: string; href: string }[];
+}
+const { email, socials } = Astro.props;
+const year = new Date().getFullYear();
+const real = (v: string | undefined) => !!v && !/todo|tbd|example\.|yourname/i.test(v);
+const mail = real(email) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : undefined;
+const links = socials.filter((s) => real(s.href) && /^(https?:|mailto:)/.test(s.href));
+---
+
+<footer class="close wrap" aria-labelledby="close-h">
+  <div class="grid12">
+    <div class="close-mark" aria-hidden="true">
+      <svg class="outline" viewBox={MARK_VIEWBOX}><path d={MARK_OUTER}></path><path d={MARK_INNER}></path></svg>
+      <svg class="solid" viewBox={MARK_VIEWBOX}><path class="mo" d={MARK_OUTER}></path><path class="mi" d={MARK_INNER}></path></svg>
+      <svg class="cut" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="100" y1="0" x2="0" y2="100"></line></svg>
+    </div>
+    <div class="close-copy">
+      <h2 id="close-h" class="mono meta">Get in touch</h2>
+      {mail ? <a class="close-mail" href={`mailto:${mail}`}>{mail}</a> : <p class="close-mail">Enrico R. Tan</p>}
+      {
+        links.length > 0 && (
+          <ul class="close-socials" aria-label="Elsewhere">
+            {links.map((s) => (
+              <li>
+                <a href={s.href} rel="me noopener">{s.label}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+    <div class="close-base mono">
+      <span>© {year} Enrico R. Tan</span>
+      <span>Set in Archivo and ER Mono (IBM Plex Mono). Built with Astro. No trackers.</span>
+    </div>
+  </div>
+</footer>

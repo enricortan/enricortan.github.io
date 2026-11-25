@@ -1,0 +1,34 @@
+---
+/**
+ * DecisionTrail (Kai): the research view. For each role, the values found before a decision
+ * fly into the one that was kept; the originals stay as ghosts (src/scripts/decision-trail.ts).
+ * Colour values (hex, rgb, …) draw as filled dots; anything else as a hatched dot, and the
+ * values line under each row always lists them in text. Reduced motion: the final state.
+ */
+interface Props {
+  roles: { name: string; from: string[]; kept: string }[];
+}
+const { roles } = Astro.props;
+---
+
+<div class="trail" data-trail data-bleed="full">
+  {
+    roles.map((r) => (
+      <div class="trail-row" data-trail-row data-vals={JSON.stringify(r.from)} data-final={r.kept}>
+        <div class="lab">
+          <h3>{r.name}</h3>
+          <span class="mono">
+            {r.from.length} {r.from.length === 1 ? 'value' : 'values'}, now 1
+          </span>
+        </div>
+        <div class="track" aria-hidden="true" />
+        <p class="vals mono">
+          {r.from.join(', ')} → {r.kept}
+        </p>
+      </div>
+    ))
+  }
+  <div class="trail-foot">
+    <button class="btn-quiet" type="button" data-trail-replay hidden>Replay the merge</button>
+  </div>
+</div>

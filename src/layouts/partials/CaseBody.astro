@@ -1,0 +1,119 @@
+---
+/**
+ * The body of a case study or lab page (Kai §5 order): claim + spec sheet, full-bleed render,
+ * MDX body in .seam-prose, outcome numbers, links.
+ * For protected entries this whole block is what gets encrypted, so it may hold
+ * anything confidential (client, hook, cover, metrics).
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import SpecSheet from '@/components/seam/SpecSheet.astro';
+import Figure from '@/components/seam/Figure.astro';
+import Video from '@/components/seam/Video.astro';
+import { mdxComponents } from '@/lib/mdx-components';
+import { resolveAv1Sibling, resolveVideo } from '@/lib/media';
+import { kindLabel, statusLabel } from '@/lib/content';
+
+interface Props {
+  entry: CollectionEntry<'work'> | CollectionEntry<'lab'>;
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+let claim: string;
+let spec: { label: string; value: string }[];
+let videoPath: string | undefined;
+let videoDescription: string | undefined;
+let disclaimer: string | undefined;
+let metrics: { label: string; value: string; source: string }[] = [];
+
+if (entry.collection === 'work') {
+  const d = entry.data;
+  claim = d.hook;
+  videoPath = d.coverVideo;
+  videoDescription = d.coverVideoDescription;
+  disclaimer = d.disclaimer;
+  metrics = d.metrics;
+  spec = [
+    { label: 'Role', value: d.role.join(', ') },
+    { label: 'Client', value: d.client },
+    ...(d.team ? [{ label: 'Team', value: d.team }] : []),
+    { label: 'Year', value: d.period ?? String(d.year) },
+    { label: 'Status', value: statusLabel(entry) },
+    ...(d.tools.length ? [{ label: 'Tools', value: d.tools.join(', ') }] : []),
+  ];
+} else {
+  const d = entry.data;
+  claim = d.proof;
+  videoPath = d.video;
+  videoDescription = d.videoDescription;
+  spec = [
+    { label: 'Kind', value: kindLabel(entry) },
+    { label: 'Status', value: statusLabel(entry) },
+    { label: 'Year', value: String(d.year) },
+    ...(d.stack.length ? [{ label: 'Stack', value: d.stack.join(', ') }] : []),
+  ];
+}
+
+const { cover, coverAlt, poster, links } = entry.data;
+const video = videoPath
+  ? { h264: resolveVideo(entry.filePath, videoPath), av1: resolveAv1Sibling(entry.filePath, videoPath) }
+  : undefined;
+---
+
+<section class="case-intro wrap" aria-label="Snapshot">
+  <p class="lede case-claim">{claim}</p>
+  <SpecSheet items={spec} />
+  {disclaimer && <p class="case-disclaimer meta">{disclaimer}</p>}
+</section>
+
+<div class="case-render" data-measure>
+  {
+    video ? (
+      <Video h264={video.h264} av1={video.av1} poster={poster ?? cover} description={videoDescription ?? coverAlt} />
+    ) : (
+      <Figure src={cover} alt={coverAlt} ratio="16:10" priority />
+    )
+  }
+</div>
+
+<div class="case-main sec wrap">
+  <div class="seam-prose">
+    <Content components={mdxComponents} />
+  </div>
+</div>
+
+{
+  metrics.length > 0 && (
+    <section class="case-outcome sec wrap" aria-labelledby={`outcome-${entry.id}`}>
+      <div class="grid12">
+        <header class="sec-head">
+          <h2 id={`outcome-${entry.id}`}>Outcome in numbers</h2>
+        </header>
+      </div>
+      <dl class="case-metrics">
+        {metrics.map((m) => (
+          <div class="case-metric">
+            <dt>{m.label}</dt>
+            <dd>
+              <span class="case-metric__value mono">{m.value}</span>
+              <span class="case-metric__source meta">Source: {m.source}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}
+
+{
+  links.length > 0 && (
+    <ul class="case-links wrap" aria-label="Links">
+      {links.map((l) => (
+        <li>
+          <a class="link" href={l.url}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

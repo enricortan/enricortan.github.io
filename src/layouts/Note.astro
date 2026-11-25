@@ -1,0 +1,88 @@
+---
+/**
+ * Note (writing) layout: title, date + reading time, optional cover, MDX body.
+ * Protected notes: title + lock gate public, cover and body encrypted.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import Protected from './partials/Protected.astro';
+import Figure from '@/components/seam/Figure.astro';
+import { formatDate, isDev, isNoindex, isoDate, isUnpublished, readingTime } from '@/lib/content';
+import { mdxComponents } from '@/lib/mdx-components';
+import { ogImageFor } from '@/lib/og';
+
+interface Props {
+  entry: CollectionEntry<'notes'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const og = await ogImageFor(d, Astro.site);
+const minutes = readingTime(entry.body);
+---
+
+<Base
+  title={d.title}
+  description={d.protected ? `${d.title}: a password-protected note.` : d.summary}
+  ogImage={og.url}
+  ogImageAlt={og.alt}
+  ogType="article"
+  publishedTime={d.protected ? undefined : d.date}
+  noindex={isNoindex(d)}
+  canonical={d.protected ? undefined : d.canonical}
+  page="note"
+>
+  <article class="note" data-slug={entry.id} data-locked={d.protected ? '' : undefined}>
+    {isDev && isUnpublished(d) && <p class="dev-flag" data-dev-badge>DEV: draft / pending — never built</p>}
+    <header class="case-head note-head wrap">
+      <p class="note-meta mono meta">
+        <time datetime={isoDate(d.date)}>{formatDate(d.date)}</time>
+        {d.updated && <span> · updated <time datetime={isoDate(d.updated)}>{formatDate(d.updated)}</time></span>}
+        {!d.protected && <span> · {minutes} min read</span>}
+        {d.protected && <span> · Password-protected</span>}
+      </p>
+      <h1 class="page-title note-title" data-vt-title style={`view-transition-name: vt-notes-${entry.id}`}>{d.title}</h1>
+    </header>
+
+    {
+      d.protected ? (
+        <Protected slug={entry.id}>
+          <div class="note-main sec wrap">
+            <div class="seam-prose">
+              <p class="lede note-summary">{d.summary}</p>
+              {d.cover && <Figure src={d.cover} alt={d.coverAlt ?? ''} ratio="16:10" priority />}
+              <Content components={mdxComponents} />
+            </div>
+          </div>
+        </Protected>
+      ) : (
+        <div class="note-main sec wrap">
+          <div class="seam-prose">
+            <p class="lede note-summary">{d.summary}</p>
+            {d.cover && <Figure src={d.cover} alt={d.coverAlt ?? ''} ratio="16:10" priority />}
+            <Content components={mdxComponents} />
+          </div>
+        </div>
+      )
+    }
+
+    <footer class="note-foot wrap">
+      {d.tags.length > 0 && !d.protected && (
+        <ul class="note-tags mono meta" aria-label="Tags">{d.tags.map((t) => <li>{t}</li>)}</ul>
+      )}
+      <p class="note-back"><a class="link" href="/notes/">All notes</a></p>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .dev-flag {
+    margin: 0;
+    padding: 6px 12px;
+    font: 600 13px/1.4 ui-monospace, monospace;
+    color: #0a1426;
+    background: #ff8e6e;
+    text-align: center;
+  }
+</style>

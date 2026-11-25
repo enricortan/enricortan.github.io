@@ -1,0 +1,88 @@
+---
+title: "CIMB Pay"
+summary: "QR payments in the CIMB Bank PH app: one scanner for merchant and InstaPay codes, a personal QR, and receipts you can send as a card."
+hook: "Scan it, pay it, send it as a card."
+client: "CIMB Bank PH"
+role: ["UI/UX design lead", "Product owner"] # TODO(Enrico): your title at CIMB per the timeline; confirm your role on CIMB Pay specifically
+year: 2025 # TODO(Enrico): unconfirmed. Inferred only from a test transfer dated 2025-01-28 on a receipt card in the design files. Replace with the real year.
+status: concept # TODO(Enrico): deliberately conservative. The cover is a launch key visual ("The new CIMB Pay"); set to "shipped" if it went live, and say when.
+type: product
+tools: ["Figma"] # TODO(Enrico): add the rest of the toolkit you used on this project
+cover: ./cover.jpg
+coverAlt: "CIMB Pay launch key visual: a hand holds a phone on the Scan & Pay screen under the words 'The new CIMB Pay', against shop, clothing-store and supermarket scenes."
+featured: true
+order: 4
+visibility: public
+confidentiality: cleared
+protected: false
+disclaimer: "The original write-up was lost with an old database. This page shows what the surviving design files show; names, amounts and account numbers in the screens are sample data."
+related: ["omg-own-my-goals"]
+updated: 2026-11-25
+---
+
+import scanAndQr from './01-scan-and-my-qr.jpg'
+import shareCard from './02-share-card.jpg'
+import transferFlow from './03-qr-transfer-flow.jpg'
+
+{/* TODO(Enrico): the original write-up is being recovered. When it is, add from it (and only from it):
+    the problem, your exact role, the team (roles only), dates, launch status and any sourced outcome.
+    Media notes: the QR code on "My QR" is pixelated because its payload couldn't be checked; the receipt card on the
+    right of cimbpayshare.png was cropped out because it shows a real-looking name, account number and reference.
+    Please confirm "Aisha Munaf" on the success screen is a sample name. */}
+
+## Context
+
+CIMB Pay is the QR payments part of the CIMB Bank PH app. Its key visual calls it "The new CIMB Pay", set against a fast-food counter, a clothing store and a supermarket aisle.
+
+The scanner's header lists the networks it reads: QR Ph, InstaPay, GCash and Maya. Two lines under the viewfinder say what each code is for:
+
+- Look for **QR Ph** codes for merchant and bill payments.
+- Look for **InstaPay** codes for peer-to-peer fund transfer.
+
+<Figure src={scanAndQr} alt="Two phones on a dark grey background. Left, tilted: the Scan & Pay screen with the CIMB Pay logo, a row of network logos (QR Ph, InstaPay, GCash, Maya), an empty viewfinder, two instruction lines, and Generate QR and Upload QR buttons. Right: My QR, a personal QR code card for a sample user with 'Customize my QR code' and 'Share QR code' buttons." caption="Scan & Pay, and My QR. The QR code is pixelated on purpose." />
+
+## One transfer, seven screens
+
+<SpecScrub render={transferFlow} alt="Seven phone screens in a row showing a QR transfer from the CIMB app home to a success receipt." steps={[
+  { label: "1 · Home", text: "The app's home: quick actions for Transfer, Remittance, Pay Bills and Buy Load, an OMG savings banner, then Deposits, Loans, Revolving Credit and Application Status. The scan button sits in the middle of the bottom bar." },
+  { label: "2 · Scan & Pay", text: "The scanner, with the accepted networks above it and the two kinds of code explained below it. Generate QR and Upload QR sit at the bottom." },
+  { label: "3 · Transfer to", text: "The recipient's bank, name and a masked account number. The source account and its balance. The amount, with 'No Fee' under it, and a line showing how many of the day's InstaPay transfers are used." },
+  { label: "4 · Transfer from", text: "A sheet of the customer's accounts with balances. One is marked 'Linked to a goal' in red." },
+  { label: "5 · Review", text: "'You are about to transfer to', then the recipient and every transfer detail, including fee and total, before Confirm." },
+  { label: "6 · MPIN", text: "A 6-digit MPIN on the bank's own screen, with Forgot MPIN? under the dots." },
+  { label: "7 · Success", text: "'Your QR transfer is successful', a reference number and the full receipt, with two ways out: Share as a Card, or Done." },
+]} />
+
+## Key decisions, as the screens show them
+
+{/* TODO(Enrico): for each decision, add the why and the trade-off in your words. Nothing is inferred beyond what's on screen. */}
+
+### 1. One scanner, explained on the scanner
+
+Merchant payments and person-to-person transfers share one camera. The screen names the networks it reads and says, in one line each, which code is for what.
+
+### 2. Limits and fees before you commit
+
+The fee ("No Fee") sits under the amount, and the day's InstaPay limit ("0 out of 5") shows on the same screen. Both are visible before Continue.
+
+### 3. Goal money is flagged
+
+When you choose where to pay from, an account tied to an OMG savings goal is labelled "Linked to a goal" in red.
+
+### 4. Review, then MPIN, then a receipt
+
+Every detail is shown once more on its own Review screen before the MPIN, and the success screen repeats the whole receipt with a reference number.
+
+### 5. A receipt you'd send
+
+"Share as a Card" turns the receipt into a card: a themed header (a birthday, the holidays), an editable title and message, and the transfer details underneath, marked "Shared from CIMB Pay". My QR works the same way: swipe to change its background, then share it.
+
+<Figure src={shareCard} alt="A hand holds a phone showing a Share QR Transfer card: a teal 'Happy Birthday!' header with balloons and gifts, a gift icon, 'You received PHP 1,000.00' and sample transfer details, with four theme thumbnails below. A second phone behind it shows a Customize Message sheet with a title and message field and a Done button." caption="Share as a Card: pick a theme, write a message, send the receipt." />
+
+## My role
+
+At CIMB Bank PH I was the UI/UX Design Lead and later also Product Owner, responsible for the Figma design system and for features from discovery to release.
+
+{/* TODO(Enrico): what you personally designed on CIMB Pay, and who else worked on it (roles only). Did you design the launch key visual on the cover? If not, credit it or use 01-scan-and-my-qr.jpg as the cover. */}
+
+{/* TODO(Enrico): Process (research, testing), Outcome (only sourced figures) and Reflection, in your words. */}

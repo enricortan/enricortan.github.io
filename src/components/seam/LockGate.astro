@@ -1,0 +1,46 @@
+---
+/**
+ * LockGate (Kai): the password form for a protected page. Theo's unlock script
+ * (src/lib/protect/unlock.ts) drives it through the data-lock-* contract:
+ *   [data-lock-gate][data-lock-slug]  data-lock-state = idle | busy | error | unlocked | unavailable
+ *   [data-lock-form] [data-lock-input] [data-lock-submit]
+ *   [data-lock-error] (hidden unless error) [data-lock-status] (live text) [data-lock-unavailable]
+ * The gate is hidden once unlocked.
+ */
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+const id = `lock-${slug}`;
+---
+
+<section class="lock-gate" data-lock-gate data-lock-slug={slug} data-lock-state="idle" aria-labelledby={`${id}-h`}>
+  <span class="lock">
+    <svg viewBox="0 0 12 14" aria-hidden="true" focusable="false"><rect x=".75" y="6" width="10.5" height="7.25"></rect><path d="M3 6V4.2a3 3 0 0 1 6 0V6"></path></svg>
+    Password
+  </span>
+  <h2 id={`${id}-h`}>This case study is password-protected</h2>
+  <p class="lg-note">This work is shared privately — ask Enrico for the password.</p>
+  <form data-lock-form>
+    <label for={`${id}-input`}>Password</label>
+    <div class="lg-row">
+      <input
+        id={`${id}-input`}
+        data-lock-input
+        type="password"
+        name="password"
+        autocomplete="current-password"
+        autocapitalize="off"
+        spellcheck="false"
+        required
+        aria-describedby={`${id}-error ${id}-status`}
+      />
+      <button class="btn" type="submit" data-lock-submit>
+        <span class="lg-idle">Unlock</span><span class="lg-busy">Unlocking…</span>
+      </button>
+    </div>
+    <p class="lg-error" id={`${id}-error`} data-lock-error role="alert" hidden>That password didn’t work. Check it and try again.</p>
+  </form>
+  <p class="lg-status" id={`${id}-status`} data-lock-status aria-live="polite"></p>
+  <p class="lg-note" data-lock-unavailable hidden>This case study can’t be opened in this browser or build. Ask Enrico for a walkthrough.</p>
+</section>

@@ -1,0 +1,39 @@
+/* =========================================================================
+   Seam wipe: MPA cross-document View Transitions (no client router).
+   The boot script in SeamHead sets html[data-vt="in" | "out"] on the new
+   page in `pagereveal` and names the one title pair "case-title" in
+   `pageswap` / `pagereveal`, so the index row title morphs into the case
+   title. In: 560ms. Out (back, or up to a parent path): 380ms.
+   Browsers without cross-document view transitions just navigate.
+   ========================================================================= */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html[data-vt="in"]::view-transition-new(root) { animation: seam-in 560ms cubic-bezier(.16, 1, .3, 1) both; }
+html[data-vt="out"]::view-transition-old(root) { animation: seam-out 380ms cubic-bezier(.22, 1, .36, 1) both; z-index: 2; }
+html[data-vt="out"]::view-transition-new(root) { z-index: 1; }
+/* the title pair: name vt-<collection>-<slug>, class case-title */
+.case-title, [data-vt-title] { view-transition-class: case-title; }
+::view-transition-group(*.case-title) { animation-duration: 560ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); z-index: 3; }
+html[data-vt="out"]::view-transition-group(*.case-title) { animation-duration: 380ms; }
+::view-transition-group(site-nav) { animation-duration: 0s; }
+::view-transition-old(site-nav) { display: none; }
+::view-transition-new(site-nav) { animation: none; }
+
+/* the seam is a "/" line: the new page enters from the left of it */
+@keyframes seam-in {
+  from { clip-path: polygon(-100vh 0, 0 0, -100vh 100%, -100vh 100%); }
+  to   { clip-path: polygon(-100vh 0, calc(100vw + 100vh) 0, 100vw 100%, -100vh 100%); }
+}
+@keyframes seam-out {
+  from { clip-path: polygon(-100vh 0, calc(100vw + 100vh) 0, 100vw 100%, -100vh 100%); }
+  to   { clip-path: polygon(-100vh 0, 0 0, -100vh 100%, -100vh 100%); }
+}
+@keyframes vt-fade-in { from { opacity: 0; } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-vt="in"]::view-transition-new(root) { animation: vt-fade-in 160ms ease both; }
+  html[data-vt="out"]::view-transition-old(root) { animation: vt-fade-out 160ms ease both; }
+  ::view-transition-group(*.case-title) { animation-duration: 0s; }
+}

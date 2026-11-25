@@ -1,0 +1,28 @@
+---
+/** Notes list. Protected notes show date + title + lock only (no summary, no cover). */
+import { formatDate, isoDate, readingTime, type Note } from '@/lib/content';
+
+interface Props {
+  entries: Note[];
+  headingLevel?: 'h2' | 'h3';
+}
+const { entries, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+---
+
+<ol class="note-list">
+  {
+    entries.map((n) => (
+      <li class="note-item" data-locked={n.data.protected ? '' : undefined}>
+        <p class="note-item__meta">
+          <time datetime={isoDate(n.data.date)}>{formatDate(n.data.date)}</time>
+          {n.data.protected ? <span> · Password-protected</span> : <span> · {readingTime(n.body)} min read</span>}
+        </p>
+        <H class="note-item__title">
+          <a href={`/notes/${n.id}/`} style={`view-transition-name: vt-notes-${n.id}`}>{n.data.title}</a>
+        </H>
+        {!n.data.protected && <p class="note-item__summary">{n.data.summary}</p>}
+      </li>
+    ))
+  }
+</ol>

@@ -1,0 +1,41 @@
+/* =========================================================================
+   "Show working": the page drawn as its own spec. A 12-column overlay plus
+   type and size labels. Pure CSS; the switch only toggles html.working.
+   Any element can carry its own label with data-spec="…".
+   ========================================================================= */
+.cols { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none; padding-inline: var(--margin); }
+html.working .cols { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+.cols span {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border-inline: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+}
+@media (max-width: 899px) {
+  html.working .cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  html.working .cols span:nth-child(n+5) { display: none; }
+}
+
+html.working :is([data-spec], main :is(h1, h2, h3, .lede, .seam-prose > p:first-of-type)) {
+  outline: 1px dashed var(--accent-line); outline-offset: 4px; position: relative;
+}
+html.working :is([data-spec], main :is(h1, h2, h3, .lede, .seam-prose > p:first-of-type))::after {
+  position: absolute; left: -1px; bottom: calc(100% + 6px); z-index: 31;
+  font: 500 13px/1 var(--mono); letter-spacing: 0; font-stretch: 100%; font-weight: 500;
+  color: var(--signal); background: var(--bg);
+  padding: 3px 5px; border: 1px solid var(--signal); white-space: nowrap; pointer-events: none;
+  text-transform: none; text-decoration: none;
+}
+html.working main h1::after { content: "h1 · Archivo 560 · wdth 106–112"; }
+html.working main h1.display::after { content: "display · Archivo 560 · wdth 112 · 10vw / 0.9 · −0.045em"; }
+html.working main :is(h1.page-title, h1.case-title)::after { content: "title · Archivo 560 · wdth 110 · 7vw / 0.94"; }
+html.working main h2::after { content: "h2 · 44 / 1.04 · wdth 106"; }
+html.working main h3::after { content: "h3 · 24 / 1.2 · wdth 104"; }
+html.working main .lede::after { content: "lede · 24 / 1.42 · ink 2"; }
+html.working main .seam-prose > p:first-of-type::after { content: "body · 17 / 1.55 · 62ch · cols 3–8"; }
+html.working [data-spec]::after { content: attr(data-spec) !important; }
+/* things that must not get a label (their pseudo-elements are drawing) */
+html.working :is(.row .t, .lock-gate h2, .trail-row h3, .margin-note *, .nav-menu *)::after { content: none !important; }
+html.working :is(.row .t, .lock-gate h2, .trail-row h3, .margin-note *) { outline: 0; }
+/* labels sit above the block's top-right corner, where the line before it rarely reaches;
+   in the nav bar they hang below instead */
+html.working :is([data-spec], main :is(h1, h2, h3, .lede, .seam-prose > p:first-of-type))::after { left: auto; right: -1px; }
+html.working .nav .nav-tools [data-spec][data-spec]::after { bottom: auto; top: calc(100% + 6px); }

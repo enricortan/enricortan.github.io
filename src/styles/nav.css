@@ -1,0 +1,102 @@
+/* =========================================================================
+   Navigation (Nav.astro). Sticky, so it must be a direct child of <body>.
+   Desktop: lockup, links, Working switch, theme toggle.
+   Phone (< 900px): lockup and a Menu button; the links and both
+   switches live in a popover sheet under the bar.
+   ========================================================================= */
+.nav {
+  position: sticky; top: 0; z-index: 40; height: var(--nav-h);
+  display: flex; align-items: center; gap: 24px;
+  padding-inline: var(--margin);
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+  view-transition-name: site-nav;
+}
+.nav.scrolled { border-bottom-color: var(--hair); }
+.brand {
+  display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
+  text-decoration: none; color: var(--ink); flex: none;
+}
+.brand svg { width: 29px; height: 28px; flex: none; }
+.brand span { font-weight: 600; font-stretch: 108%; letter-spacing: -.01em; white-space: nowrap; }
+.mo { fill: var(--mark-outer); }
+.mi { fill: var(--mark-inner); }
+
+.nav-links { display: flex; gap: 4px; margin-left: auto; }
+.nav-links a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px;
+  text-decoration: none; color: var(--ink-2); font-size: 15px;
+  text-underline-offset: 8px; text-decoration-thickness: 1px;
+}
+.nav-links a[aria-current] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); }
+@media (hover: hover) { .nav-links a:hover { color: var(--ink); } }
+
+.nav-tools { display: flex; gap: 8px; margin-left: 8px; }
+.tool {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: 2px;
+  background: transparent; border: 1px solid var(--rule); color: var(--ink);
+  font-family: var(--mono); font-size: 13px; line-height: 1; cursor: pointer; white-space: nowrap;
+}
+.tool[aria-checked="true"] { border-color: var(--signal); color: var(--signal); }
+.tool[aria-checked] .sw-dot {
+  width: 8px; height: 8px; border: 1px solid currentColor; transform: rotate(45deg); flex: none;
+}
+.tool[aria-checked="true"] .sw-dot { background: currentColor; }
+@media (hover: hover) { .tool:hover { border-color: var(--ink-2); } }
+
+.nav-menu-btn { display: none; margin-left: auto; }
+.nav-menu {
+  /* popover sheet (phone) */
+  position: fixed; inset: var(--nav-h) 0 auto 0; margin: 0; width: 100%; max-width: none;
+  max-height: calc(100dvh - var(--nav-h)); overflow: auto;
+  padding: 8px var(--margin) 32px; border: 0; border-bottom: 1px solid var(--hair);
+  background: var(--bg); color: var(--ink);
+}
+.nav-menu::backdrop { inset: var(--nav-h) 0 0 0; background: color-mix(in srgb, var(--bg) 60%, transparent); }
+.nav-menu nav { display: grid; }
+.nav-menu nav a {
+  display: flex; align-items: center; min-height: 56px; border-bottom: 1px solid var(--hair);
+  font-size: 24px; font-weight: 560; font-stretch: 104%; letter-spacing: -.012em; text-decoration: none; color: var(--ink);
+}
+.nav-menu nav a[aria-current] { color: var(--accent); }
+.nav-menu .nav-tools { margin: 24px 0 0; }
+
+@media (max-width: 899px) {
+  .nav { gap: 12px; }
+  .nav > .nav-links, .nav > .nav-tools { display: none; }
+  .nav-menu-btn { display: inline-flex; }
+}
+@media (min-width: 900px) {
+  .nav-menu { display: none !important; }
+}
+
+/* =========================================================================
+   Footer (Footer.astro): a designed close.
+   ========================================================================= */
+.close { padding-block: var(--section) 40px; border-top: 1px solid var(--hair); }
+.close-mark { grid-column: 1 / span 4; position: relative; aspect-ratio: 334.2 / 324; max-width: 320px; width: 100%; }
+.close-mark svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.close-mark .outline path { fill: none; stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.close-mark .solid { clip-path: polygon(0 0, 100% 0, 0 100%); }
+.close-mark .cut { overflow: visible; }
+.close-mark .cut line { stroke: var(--signal); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+p.close-mail { text-decoration: none; }
+.close-copy { grid-column: 6 / span 7; align-self: end; display: grid; gap: 16px; min-width: 0; }
+.close-mail {
+  font-size: clamp(28px, 4vw, 56px); font-weight: 560; font-stretch: 108%; letter-spacing: -.03em; line-height: 1.05;
+  color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px; text-underline-offset: .16em; overflow-wrap: anywhere;
+}
+@media (hover: hover) { .close-mail:hover { color: var(--accent); } }
+.close-socials { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.close-socials a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-2); text-underline-offset: 6px; text-decoration-color: var(--rule); }
+@media (hover: hover) { .close-socials a:hover { color: var(--ink); text-decoration-color: var(--accent); } }
+.close-base {
+  grid-column: 1 / -1; margin-top: clamp(56px, 8vw, 112px); padding-top: 20px; border-top: 1px solid var(--hair);
+  display: flex; flex-wrap: wrap; gap: 8px 32px; justify-content: space-between; color: var(--ink-3);
+}
+@media (max-width: 899px) {
+  .close-mark { grid-column: 1 / span 8; margin-bottom: 40px; max-width: 200px; }
+  .close-copy { grid-column: 1 / -1; }
+}

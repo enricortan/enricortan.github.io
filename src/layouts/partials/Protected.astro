@@ -1,0 +1,65 @@
+---
+/**
+ * Wraps the body of a password-protected entry. Render it ONLY for entries with
+ * `protected: true`; everything in the default slot is what gets encrypted.
+ * Model and attribute contract: src/lib/protect/README.md.
+ */
+import LockGate from '@/components/seam/LockGate.astro';
+import { protectMode } from '@/lib/protect/mode';
+
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+---
+
+{
+  protectMode === 'dev' && (
+    <>
+      <p class="dev-badge" data-dev-badge role="note">DEV: protected — this content ships encrypted</p>
+      <div data-protected-content data-protected-slug={slug} data-protected-dev>
+        <slot />
+      </div>
+    </>
+  )
+}
+{
+  protectMode === 'encrypt' && (
+    <>
+      <div class="lock-wrap wrap">
+        <LockGate slug={slug} />
+      </div>
+      <div data-protected-content data-protected-slug={slug} tabindex="-1">
+        <i hidden data-protect-begin={slug} />
+        <slot />
+        <i hidden data-protect-end={slug} />
+      </div>
+    </>
+  )
+}
+{
+  protectMode === 'locked' && (
+    <div class="wrap" data-protected-content data-protected-slug={slug} data-protected-unavailable>
+      <p class="protected-notice lede" data-protected-notice>This page is password-protected and locked — unavailable in this build.</p>
+    </div>
+  )
+}
+
+<script>
+  import { initProtected } from '@/lib/protect/unlock';
+  initProtected();
+</script>
+
+<style>
+  .dev-badge {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin: 0;
+    padding: 6px 12px;
+    font: 600 13px/1.4 ui-monospace, monospace;
+    color: #0a1426;
+    background: #ff8e6e;
+    text-align: center;
+  }
+</style>

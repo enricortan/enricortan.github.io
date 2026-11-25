@@ -1,0 +1,66 @@
+---
+title: "How I run a design team of AI agents"
+summary: "Roles, written briefs, owned files, a lessons log and a measured run for every job. The agents are my team; the decisions stay mine."
+date: 2026-11-25
+tags: ["process", "ai", "agents", "design-leadership"]
+protected: false
+---
+
+{/* TODO(Enrico): this is written in your voice from your roster, lessons file and briefs, with no client or product details.
+    Read it as yourself and change any reasoning that isn't yours. Then set the date. */}
+
+Most days I work with a team that doesn't remember yesterday, works faster than I can read, and will tell me with total confidence that something is broken when it isn't. They're AI agents. Over the last few months I've stopped treating them as a smarter autocomplete and started running them the way I'd run any design team: clear roles, written briefs, owned files, and a record of what went wrong.
+
+This is how it works today.
+
+## The shape of the team
+
+There are three layers, and I'm only in the top one.
+
+**Me.** I own the decisions. Every ruling goes into a decision log in my own words, with a date, newest first. Pending items are proposals, not rules.
+
+**A chief designer.** One agent runs the main session. It writes the briefs, reviews the screenshots, and makes calls *inside* the written rules. When it does, the call is logged as its call, so I can overrule it later.
+
+**A triage agent and the workers.** A second agent watches every run, relays messages, and keeps two files: the roster and the lessons. Under them sit the working agents: at most five at once, each with a common name and a one- or two-word role, like "Components", "Shell" or "Sweep".
+
+The cap of five started as one line in my first brief. The numbers backed it later: every running agent carries its own context, and the whole team shares one usage budget. Past a point, more agents means more re-reading, not more output.
+
+## Every brief has the same five parts
+
+A brief is the only context an agent gets, so it has to carry everything:
+
+1. **The goal in my words.**
+2. **Files owned and files off-limits.**
+3. **How to verify**: the exact command, the page, the test.
+4. **The reply format**, with a length cap.
+5. **The checklist** from the lessons file, pasted in.
+
+The checklist is the part that compounds. It's a numbered list of rules that each came from a real mistake: how to run shell commands on my machine, how to search without flooding the context, how to verify cheaply, how much to write back.
+
+## No two agents touch the same file
+
+This is the rule that made parallel work possible. Before a round starts, every file has one owner. On a shared Figma page, every agent gets its own region with room to spare. If a job needs someone else's file, the edit goes to that file's owner, or to me for an OK. It never gets routed around.
+
+On one build day I ran fourteen jobs across a morning, five at a time, on one codebase. No two of them edited the same file. Each builder ended with "type-check pending": one full type-check was kept for after the last builder, so nobody was checking a tree that was still moving.
+
+## Every run is measured
+
+I don't judge a run by how it feels. For each one, the triage agent records the minutes it was active, the tool calls, the output tokens, the peak context, the errors, and where the time went: planning, exploring, building, screenshots, write-up.
+
+The numbers changed how I brief. On some runs, thinking took more than half the time, so planning now happens in one pass: list what you need, fetch it all at once, then plan. Output is the main time cost, so deliverables are tables, not essays, and sub-agents get a forty-line answer cap.
+
+## Lessons have a format
+
+When something goes wrong, it becomes a lesson with a number: the date, who, what happened, what it cost, the rule, and how to apply it. When it happens again, it gets a "×2" and a stronger rule. There are about sixty now.
+
+A few that changed how the whole team works:
+
+- **Read before you edit.** Agents kept trying to edit files they hadn't opened in that session, or that another agent had just changed. It recurred eight times before the rule became "read every file on your list, in one batch, before the first edit".
+- **Retest before you report.** On one QA day, five findings were false: a screen-reader-only label reported as "clipped", an Escape "bug" that was really a click timeout, a chat that looked broken because the first compile was slow. Now a finding needs a retest or a cropped screenshot before it goes in a report.
+- **Budget before you fan out.** One morning the account hit its usage limit and all five agents stopped within seventeen seconds of each other. Now the team's total context has a ceiling, every job is sized to finish small, and every brief is ordered by priority, so a trim cuts from the end.
+
+## What stays mine
+
+The agents research, build, screenshot and check. They're good at it, and they're fast. But they don't decide what the product should be, which feedback to act on, or when something is good enough to ship. Those calls are mine, and they're written down where everyone, human or not, can read them.
+
+That's the trade I'd recommend to any designer trying this: give the agents the work, keep the judgment, and write both down. This site is being built the same way, by a content lead, a brand-and-motion lead and a build lead, with me deciding.

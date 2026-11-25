@@ -1,0 +1,80 @@
+# Profile: Enrico R. Tan. Owner: Nora (content). Facts come from the legacy site's timeline and Enrico's own files.
+# Every "TODO(Enrico)" is a fact only Enrico can supply. Don't fill them with guesses.
+
+name: "Enrico R. Tan"
+shortName: "Enrico"
+headline: "I design products, build them, and direct the AI agents that help me do both."
+tagline: "Designer who ships."
+
+photo: ./headshot.jpg
+photoAlt: "Enrico R. Tan, smiling, in glasses, a dark suit and a navy tie."
+
+# About opens with positioning B, "Adaptation is the craft".
+bio:
+  - "Adaptation is the craft. Every tool I mastered expired; re-tooling never did. Now I design in Figma, ship in code, and run a studio of AI agents."
+  - "I've designed digital products since 2015, across banking, cybersecurity, healthcare and product startups. At CIMB Bank PH I led UI/UX for the digital banking app and later took on product ownership: the Figma design system, the roadmap, and features from discovery to release."
+  - "Today I'm a lead designer at FLNT, where I design and build lease-intelligence products for retail property, and the design system under them. I work the whole loop myself, from research and design to front-end build and QA, with a team of AI agents doing the legwork. The decisions stay mine."
+
+# Short bio for places without room for the full one (the home page uses site.yaml home.about.body first).
+bioShort: "Adaptation is the craft. I've designed digital products since 2015, in banking, cybersecurity, healthcare and startups. Now I design in Figma, ship in code, and run a studio of AI agents."
+
+location: "Manila, Philippines"
+email: "enrico.sag@gmail.com"
+# availability: optional. Add only if true, e.g. "Not looking, happy to talk".
+# cv: optional. Path to the CV PDF once it exists.
+
+socials:
+  - label: "LinkedIn"
+    href: "https://www.linkedin.com/in/enrico-tan-iii-98123b53/"
+  - label: "GitHub"
+    href: "https://github.com/enricortan"
+
+# Newest first. Dates as YYYY-MM; end: null means current.
+experience:
+  - company: "FLNT"
+    role: "Lead Designer" # TODO(Enrico): confirm the exact title (your own notes say "Lead designer at flnt")
+    start: "2026-05"
+    end: null
+    summary: "Design and front-end build for FLNT's lease-intelligence products, and the design system under them. I direct a team of AI agents for research, build and QA."
+
+  - company: "CIMB Bank PH"
+    role: "UI/UX Design Lead & Product Owner (Manager 1)"
+    start: "2021-06"
+    end: "2026-03"
+    summary: "Product owner for the vision, roadmap and delivery of key features in the digital banking app. The sole UI/UX design authority: owned the Figma design system and asset library, and led features from discovery to release, including onboarding and transaction flows."
+
+  - company: "Obelisk Security, Hong Kong"
+    role: "Product Designer"
+    start: "2017-03" # TODO(Enrico): this role and Futureworks PH share Mar 2017 – Jun 2021. Concurrent, or should one change?
+    end: "2021-06"
+    summary: "Led the redesign of cybersecurity product interfaces with the development team, and redesigned an internal application for the National Cancer Centre Singapore."
+
+  - company: "Futureworks PH (Outbound Asia Inc.)"
+    role: "UI/UX Designer"
+    start: "2017-03" # TODO(Enrico): see the overlap note above
+    end: "2021-06"
+    summary: "Lead designer across the whole lifecycle, from concept and branding to production. Built designs in front-end code, prototyped, and made the marketing assets for launches."
+
+  - company: "ThousandMinds, Makati City"
+    role: "Frontend Designer, UI/UX"
+    start: "2015-03"
+    end: "2016" # TODO(Enrico): month
+    summary: "Design assets for mobile and web applications."
+
+skills:
+  - group: "Product"
+    items: ["Product ownership", "Roadmapping and prioritisation", "Discovery and validation", "Stakeholder management"]
+  - group: "Design"
+    items: ["UI design and prototyping", "Design systems and tokens", "Interaction and motion", "Accessibility (WCAG AA)", "Research and usability testing"]
+  - group: "Build"
+    items: ["TypeScript and React", "Next.js and Astro", "Figma plugins and Chrome extensions", "Playwright"]
+  - group: "AI"
+    items: ["Directing AI agent teams (Claude Code)", "AI interaction design", "Agent briefs, evaluation and lessons logs"]
+
+speaking:
+  - title: "Adaptation is the craft"
+    event: "Config 2027 (Figma)"
+    kind: "Talk concept" # a proposal drafted for Config 2027's call for speakers; not delivered
+    date: "2026-11"
+    status: "proposal" # TODO(Enrico): was it submitted (deadline 16 Nov 2026)? Accepted? Update or remove.
+    summary: "Every tool I got good at eventually expired, but the skill of switching never did. Now that AI makes polish cheap, that skill is the craft."
